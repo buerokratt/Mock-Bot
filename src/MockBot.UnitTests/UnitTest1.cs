@@ -1,6 +1,6 @@
 using Xunit;
 
-namespace mock_bot.unit_tests
+namespace MockBot.UnitTests
 {
     public class UnitTest1
     {

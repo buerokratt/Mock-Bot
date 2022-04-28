@@ -1,3 +1,3 @@
 # Introduction
 
-A repository for the mock bot component in the Bürokratt project.
+A repository for the MockBot component in the Bürokratt project.
