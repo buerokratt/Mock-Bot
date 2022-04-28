@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32414.318
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mock-bot", "mock-bot.csproj", "{90F8F357-72AF-4132-86F4-F1C26EC849A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mock-bot.unit-tests", "..\mock-bot.unit-tests\mock-bot.unit-tests.csproj", "{DA08DFDD-0AEF-4EBB-8B40-F39B88169392}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90F8F357-72AF-4132-86F4-F1C26EC849A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90F8F357-72AF-4132-86F4-F1C26EC849A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90F8F357-72AF-4132-86F4-F1C26EC849A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90F8F357-72AF-4132-86F4-F1C26EC849A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA08DFDD-0AEF-4EBB-8B40-F39B88169392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA08DFDD-0AEF-4EBB-8B40-F39B88169392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA08DFDD-0AEF-4EBB-8B40-F39B88169392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA08DFDD-0AEF-4EBB-8B40-F39B88169392}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B46A96F5-DEB4-44F9-B4D1-FA9F35B192A2}
+	EndGlobalSection
+EndGlobal
