@@ -7,19 +7,24 @@ This document outlines the technical design for the mock chatbot component.
 Mock Bot is a lightweight component used to simulate chatbot participation in a Decentralized Messaging Room. Its primary use cases are to:
 
 - Enable users to send messages to DMR and read the async responses from DMR participants;
-- Set up a mock participant in DMR with automatic responses mapped to specified message tokens.
+- Set up a mock participant in DMR with automatic replies to incoming DMR messages.
 
 Any chatbot can be integrated with DMR and CentOps as long as it supports all mandatory integrations:
 
 | Integration                                                                                                                                                | Mandatory |
 |:-----------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
 | ![DMR](https://img.shields.io/badge/-DMR-blueviolet) Ask DMR for help with a specific message                                                              | M         |
-| ![DMR](https://img.shields.io/badge/-DMR-blueviolet) Provide answer to a message help request                                                              | M         |
-| ![CentOps](https://img.shields.io/badge/-CentOps-blue) Query list of DMR-s                                                                                 | M         |
-| ![CentOps](https://img.shields.io/badge/-CentOps-blue) Receive DMR list changes                                                                            | M         |
+| ![DMR](https://img.shields.io/badge/-DMR-blueviolet) Provide a response to a message in DMR                                                                | M         |
+| ![CentOps](https://img.shields.io/badge/-CentOps-blue) Query list of ecosystem participants (DMR-s)                                                        | M         |
+| ![CentOps](https://img.shields.io/badge/-CentOps-blue) Receive updates about participants                                                                  | M         |
 | ![CentOps](https://img.shields.io/badge/-CentOps-blue) Notify CentOps of Chatbot status change<br/> (status of the entire chatbot, not some specific node) | M         |
 | ![CentOps](https://img.shields.io/badge/-CentOps-blue) Notify CentOps of planned downtime                                                                  | O         |
 | ![CentOps](https://img.shields.io/badge/-CentOps-blue) Provide health information (logs)                                                                   | O         |
+
+## Automatic replies to DMR
+
+The Mock Bot will reply to every incoming DMR message with an automated reply of the input message reversed, e.g. a DMR request with the message `Hello World!`
+will be replied with `!dlroW olleH!`.
 
 ## Story over DMR
 
@@ -77,11 +82,13 @@ This will be managed through additional fields in help request and response payl
 }
 ```
 
+## Message flows
+
 ## API Design
 
-The Mock Bot has a REST API which serves three kinds of clients: end users, DMR-s, CentOps.
+The Mock Bot has a REST API which serves three types of clients: `end users`, `DMR-s`, `CentOps`.
 
-### Requests from end user
+### Requests from end users
 
 `POST /chats`
 
@@ -172,6 +179,37 @@ The Mock Bot has a REST API which serves three kinds of clients: end users, DMR-
 ```
 
 ---
+`GET /chats/{chatId}/messages`
+
+```
+<none>
+```
+
+`200/OK`
+
+```json
+[
+  {
+    "id": "7d887e2f-146f-43fe-a2f0-06efafea6317",
+    "message": "I would like to renew my id card",
+    "created": "2022-05-10T04:17:25.275Z",
+    "from": {
+      "name": null,
+      "type": "Client"
+    }
+  },
+  {
+    "id": "c86dd24a-1ab6-458f-9071-02ad4cfc5e37",
+    "messageIdRef": "7d887e2f-146f-43fe-a2f0-06efafea6317",
+    "message": "Please authenticate yourself.",
+    "created": "2022-05-10T04:18:11.222Z",
+    "from": {
+      "name": "PoliceAndBorderGuard",
+      "type": "Chatbot"
+    }
+  }
+]
+```
 
 ### Requests from CentOps
 
