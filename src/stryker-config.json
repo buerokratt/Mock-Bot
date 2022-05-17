@@ -1,6 +1,6 @@
 {
     "stryker-config": {
-      "test-projects": [ "./MockBot/MockBot.csproj" ],
+      "test-projects": [ "./MockBot.UnitTests/MockBot.UnitTests.csproj" ],
       "reporters": [
         "progress",
         "cleartext",
