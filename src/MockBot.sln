@@ -5,7 +5,7 @@ VisualStudioVersion = 17.1.32414.318
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockBot.UnitTests", "MockBot.UnitTests\MockBot.UnitTests.csproj", "{3ED9E1C4-785B-4BD3-806C-F3C9EFD8C540}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MockBot.Api", "MockBot.Api\MockBot.Api.csproj", "{D0ED79F9-0883-41AF-93BC-E4BA9C0EA29A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockBot.Api", "MockBot.Api\MockBot.Api.csproj", "{D0ED79F9-0883-41AF-93BC-E4BA9C0EA29A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
