@@ -22,12 +22,29 @@ namespace MockBot.UnitTests
         public void GetReturnsExpected()
         {
             // Arrange
+            var expectedResult = new string[] { "value1", "value2" };
 
             // Act
             var result = sut.Get();
 
             // Assert
-            Assert.Equal(new string[] { "value1", "value2" }, result);
-    }
+            Assert.Equal(expectedResult, result);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(10000000)]
+        [InlineData(-1)]
+        public void GetByIdReturnsExpected(int id)
+        {
+            // Arrange
+            var expectedResult ="value";
+
+            // Act
+            var result = sut.Get(id);
+
+            // Assert
+            Assert.Equal(expectedResult, result);
+        }
     }
 }
