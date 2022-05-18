@@ -33,17 +33,10 @@ jobs:
       run: dotnet publish *.sln --no-restore
      
     - name: Dotnet Test (unit tests only)
-      run: dotnet test /p:ExcludeByFile="**/program.cs" src/*.UnitTests/*.csproj --no-build --verbosity normal --collect:"XPlat Code Coverage"
+      run: dotnet test src/*.UnitTests/*.csproj --no-build --verbosity normal --collect:"XPlat Code Coverage"
       
     - name: Copy Coverage output to root
       run: cp src/*.UnitTests/TestResults/**/coverage.cobertura.xml coverage.cobertura.xml
-      
-      
-    - name: Upload Coverage XML Report temp
-      uses: actions/upload-artifact@v3.0.0
-      with:
-        name: coverage-report-xml
-        path: src/*.UnitTests/TestResults/**/coverage.cobertura.xml
       
     - name: Code Coverage Summary
       uses: irongut/CodeCoverageSummary@v1.2.0
