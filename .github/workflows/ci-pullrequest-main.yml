@@ -36,7 +36,7 @@ jobs:
       run: dotnet test /p:ExcludeByFile="**/program.cs" src/*.UnitTests/*.csproj --no-build --verbosity normal --collect:"XPlat Code Coverage"
       
     - name: Copy Coverage output to root
-      run: cp src/*.UnitTests/TestResults/**/coverage.cobertura.xml coverage.cobertura.xml
+      run: cp src/TestResults/**/coverage.cobertura.xml coverage.cobertura.xml
       
     - name: Code Coverage Summary
       uses: irongut/CodeCoverageSummary@v1.2.0
