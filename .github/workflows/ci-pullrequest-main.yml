@@ -33,7 +33,8 @@ jobs:
       run: dotnet publish *.sln --no-restore
      
     - name: Dotnet Test (unit tests only)
-      run: dotnet test src/*.UnitTests/*.csproj --no-build --verbosity normal --collect:"XPlat Code Coverage"
+      working-directory: src
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage"
       
     - name: Copy Coverage output to root
       run: cp src/*.UnitTests/TestResults/**/coverage.cobertura.xml coverage.cobertura.xml
