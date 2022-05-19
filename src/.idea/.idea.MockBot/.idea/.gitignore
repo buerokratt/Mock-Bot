@@ -5,7 +5,7 @@
 /contentModel.xml
 /modules.xml
 /projectSettingsUpdater.xml
-/.idea.MockBot.iml
+*.iml
 .idea
 vcs.xml
 # Editor-based HTTP Client requests
