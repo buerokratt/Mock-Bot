@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using MockBot.Api.Interfaces;
+using MockBot.Api.Services;
 
 namespace MockBot.Api
 {
@@ -15,6 +17,7 @@ namespace MockBot.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSingleton<IChatService, ChatService>();
 
             var app = builder.Build();
 
@@ -22,7 +25,10 @@ namespace MockBot.Api
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(options =>
+                {
+                    options.EnableTryItOutByDefault();
+                });
             }
 
             app.UseHttpsRedirection();
