@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using MockBot.Api.Models;
-using MockBot.Api.Services;
+﻿using MockBot.Api.Services;
 using Xunit;
 
 namespace MockBot.UnitTests;
@@ -17,16 +15,39 @@ public class ChatServiceTests
     [Fact]
     public void Create()
     {
-        var message = new Message("someText");
-        var chat = new Chat
-        {
-            Messages = new List<Message> { message }
-        };
-
         var result = _sut.Create();
-        result.Messages.Add(message);
 
-        Assert.Equal(chat.Messages, result.Messages);
         Assert.NotEmpty(result.Id.ToString());
+    }
+
+    [Fact]
+    public void FindAll()
+    {
+        _sut.Create();
+        var result = _sut.FindAll();
+        
+        Assert.Single(result);
+    }
+
+    [Fact]
+    public void Get()
+    {
+        var chat = _sut.Create();
+        var result = _sut.Get(chat.Id);
+        
+        Assert.Equal(chat.Id, result.Id);
+    }
+
+    [Fact]
+    public void CreateMessage()
+    {
+        var messageContent = "someText";
+
+        var chat = _sut.Create();
+        var message = _sut.CreateMessage(chat.Id, messageContent);
+        var result = _sut.Get(chat.Id).Messages.Find(m => m.Id.Equals(message.Id)).Content;
+        
+        Assert.Equal(messageContent, result);
+        Assert.NotNull(message.CreatedAt);
     }
 }

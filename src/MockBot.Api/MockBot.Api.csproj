@@ -30,4 +30,9 @@
   <ItemGroup>
     <None Include="..\.editorconfig" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Services\MessageService.cs" />
+    <Compile Remove="Models\Message.cs" />
+    <Compile Remove="Interfaces\IMessageService.cs" />
+  </ItemGroup>
 </Project>

@@ -4,18 +4,18 @@ namespace MockBot.Api.Models;
 
 public class Chat
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; } = Guid.NewGuid();
 
-    [Required] public List<Message> Messages { get; set; } = new List<Message>();
+    [Required] public List<Message> Messages { get; } = new List<Message>();
 }
 
 public class Message
 {
-    private Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; } = Guid.NewGuid();
  
-    private string Content { get; set; }
+    public string Content { get; set; }
     
-    private DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime CreatedAt { get; } = DateTime.Now;
     
     public Message([Required] string content)
     {
