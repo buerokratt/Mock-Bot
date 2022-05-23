@@ -41,7 +41,7 @@ namespace MockBot.UnitTests
         [Fact]
         public void CreateMessage()
         {
-            var messageContent = "someText";
+            const string messageContent = "someText";
 
             var chat = _sut.CreateChat();
             _sut.AddMessage(chat.Id, messageContent);
