@@ -1,9 +1,11 @@
-openapi: 3.1.0
-x-stoplight:
-  id: nkbr4wufxtv52
+openapi: 3.0.3
 info:
-  title: mbot
+  title: Mock Bot API
   version: '1.0'
+  description: Lightweight component used to demonstrate chatbot integration with a Distributed Message Room.
+  license:
+    name: MIT-0
+    url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: 'http://localhost:3000'
 paths:
@@ -17,9 +19,55 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Chat'
+                title: Chat
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: a51d61c3-ce60-478d-98d5-21b8b99271ae
+                    readOnly: true
+                  messages:
+                    type: array
+                    items:
+                      title: Message
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                          readOnly: true
+                        content:
+                          type: string
+                          example: 'Hi, I need to update my drivers licence.'
+                        createdAt:
+                          type: string
+                          format: date-time
+                          example: '2022-05-13T11:28:29.972Z'
+                          readOnly: true
+                      required:
+                        - id
+                        - content
+                        - createdAt
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: '2022-05-13T11:28:29.972Z'
+                    readOnly: true
+                required:
+                  - id
+                  - createdAt
               examples: {}
       description: Start a new chat.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties: {}
+            examples:
+              example-1:
+                value: {}
     parameters: []
   '/client-api/chats/{chatId}/messages':
     parameters:
@@ -42,7 +90,27 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Message'
+                  title: Message
+                  x-stoplight:
+                    id: 8rb81u2ztllz0
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                      readOnly: true
+                    content:
+                      type: string
+                      example: 'Hi, I need to update my drivers licence.'
+                    createdAt:
+                      type: string
+                      format: date-time
+                      example: '2022-05-13T11:28:29.972Z'
+                      readOnly: true
+                  required:
+                    - id
+                    - content
+                    - createdAt
       description: ''
     post:
       summary: ''
@@ -53,13 +121,53 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Message'
+                title: Message
+                x-stoplight:
+                  id: 8rb81u2ztllz0
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    readOnly: true
+                  content:
+                    type: string
+                    example: 'Hi, I need to update my drivers licence.'
+                  createdAt:
+                    type: string
+                    format: date-time
+                    example: '2022-05-13T11:28:29.972Z'
+                    readOnly: true
+                required:
+                  - id
+                  - content
+                  - createdAt
       description: ''
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Message'
+              title: Message
+              x-stoplight:
+                id: 8rb81u2ztllz0
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  readOnly: true
+                content:
+                  type: string
+                  example: 'Hi, I need to update my drivers licence.'
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: '2022-05-13T11:28:29.972Z'
+                  readOnly: true
+              required:
+                - id
+                - content
+                - createdAt
   /dmr-api/messages:
     parameters: []
     post:
@@ -69,12 +177,51 @@ paths:
         '202':
           description: Accepted
       description: Receive message from DMR.
+      parameters:
+        - name: X-Sent-From
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: b4ac37cf-1ae9-429e-9d05-22d7db901ef3
+          description: Uuid of the participant that sent the message.
+        - name: X-Message-Id
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: bb20ba03-5e52-4a61-bcc1-0ad538f1b448
+          description: 'Uuid generated by the sender of a message for correlating async responses to a specific request. '
+        - name: X-Message-Id-Ref
+          in: header
+          schema:
+            type: string
+            format: uuid
+            example: 545226ad-0b8d-4ccb-b83f-6b3ad8d44ec8
+          description: Reference to the original X-Message-Id we are replying to.
       requestBody:
         content:
+          text/plain:
+            schema:
+              type: string
           application/json:
             schema:
-              $ref: '#/components/schemas/DMRMessage'
-        description: ''
+              title: ClassificationResponse
+              type: object
+              description: ''
+              properties:
+                messages:
+                  type: array
+                  items:
+                    type: string
+                classification:
+                  type: string
+              required:
+                - messages
+                - classification
+        description: Encrypted payload
 components:
   schemas:
     Chat:
@@ -82,7 +229,6 @@ components:
       x-stoplight:
         id: 0wi8ep6tujz0u
       type: object
-      examples: []
       properties:
         id:
           type: string
@@ -92,7 +238,27 @@ components:
         messages:
           type: array
           items:
-            $ref: '#/components/schemas/Message'
+            title: Message
+            x-stoplight:
+              id: 8rb81u2ztllz0
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                readOnly: true
+              content:
+                type: string
+                example: 'Hi, I need to update my drivers licence.'
+              createdAt:
+                type: string
+                format: date-time
+                example: '2022-05-13T11:28:29.972Z'
+                readOnly: true
+            required:
+              - id
+              - content
+              - createdAt
         createdAt:
           type: string
           format: date-time
@@ -106,7 +272,6 @@ components:
       x-stoplight:
         id: 8rb81u2ztllz0
       type: object
-      examples: []
       properties:
         id:
           type: string
@@ -124,43 +289,6 @@ components:
         - id
         - content
         - createdAt
-    DMRMessage:
-      title: DMRMessage
-      x-stoplight:
-        id: ip5f1pcve4h88
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          example: 2c0401d0-f804-47fa-a278-0b9164ec0b2c
-          description: 'generated by initiating participant, in DMR a unique key would consist of id, '
-        from:
-          type: string
-          description: DMR participant unique name
-          example: PoliceAndBorderGuardBot
-        to:
-          type: string
-          description: 'DMR participant unique name. If to is null, message will be forwarded to Classifier.'
-          example: ChitChatBot
-        payload:
-          $ref: '#/components/schemas/Payload'
-      required:
-        - id
-        - from
-        - payload
-    Payload:
-      title: Payload
-      x-stoplight:
-        id: ip5f1pcve4h88
-      type: object
-      properties:
-        content:
-          type: string
-        client:
-          type: string
-      required:
-        - content
-      description: '?Encrypted? payload containing all data not used for routing DMR messages.'
   requestBodies: {}
   responses: {}
+  securitySchemes: {}
