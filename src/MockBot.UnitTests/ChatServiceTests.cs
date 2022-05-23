@@ -1,53 +1,52 @@
 ﻿using MockBot.Api.Services;
 using Xunit;
 
-namespace MockBot.UnitTests;
-
-public class ChatServiceTests
+namespace MockBot.UnitTests
 {
-    private readonly ChatService _sut;
-
-    public ChatServiceTests()
+    public class ChatServiceTests
     {
-        _sut = new ChatService();
-    }
+        private readonly ChatService _sut;
 
-    [Fact]
-    public void Create()
-    {
-        var result = _sut.Create();
+        public ChatServiceTests()
+        {
+            _sut = new ChatService();
+        }
 
-        Assert.NotEmpty(result.Id.ToString());
-    }
+        [Fact]
+        public void Create()
+        {
+            var result = _sut.CreateChat();
 
-    [Fact]
-    public void FindAll()
-    {
-        _sut.Create();
-        var result = _sut.FindAll();
-        
-        Assert.Single(result);
-    }
+            Assert.NotEmpty(result.Id.ToString());
+        }
 
-    [Fact]
-    public void Get()
-    {
-        var chat = _sut.Create();
-        var result = _sut.Get(chat.Id);
-        
-        Assert.Equal(chat.Id, result.Id);
-    }
+        [Fact]
+        public void FindAll()
+        {
+            var chat = _sut.CreateChat();
+            var result = _sut.FindAll();
 
-    [Fact]
-    public void CreateMessage()
-    {
-        var messageContent = "someText";
+            Assert.Contains(chat, result);
+        }
 
-        var chat = _sut.Create();
-        var message = _sut.CreateMessage(chat.Id, messageContent);
-        var result = _sut.Get(chat.Id).Messages.Find(m => m.Id.Equals(message.Id)).Content;
-        
-        Assert.Equal(messageContent, result);
-        Assert.NotNull(message.CreatedAt);
+        [Fact]
+        public void GetId()
+        {
+            var chat = _sut.CreateChat();
+            var result = _sut.GetId(chat.Id);
+
+            Assert.Equal(chat.Id, result.Id);
+        }
+
+        [Fact]
+        public void CreateMessage()
+        {
+            var messageContent = "someText";
+
+            var chat = _sut.CreateChat();
+            _sut.AddMessage(chat.Id, messageContent);
+
+            Assert.NotNull(_sut.GetId(chat.Id).Messages);
+        }
     }
 }

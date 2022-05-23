@@ -1,12 +1,13 @@
 ﻿using MockBot.Api.Models;
 
-namespace MockBot.Api.Interfaces;
-
-public interface IChatService
+namespace MockBot.Api.Interfaces
 {
-    public Chat Create();
+    public interface IChatService
+    {
+        public Chat CreateChat();
 
-    public IEnumerable<Chat> FindAll();
-    Chat Get(Guid id);
-    Message CreateMessage(Guid chatId, string content);
+        public IEnumerable<Chat> FindAll();
+        Chat GetId(Guid id);
+        Message AddMessage(Guid chatId, string content);
+    }
 }

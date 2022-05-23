@@ -1,25 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
-namespace MockBot.Api.Models;
-
-public class Chat
+namespace MockBot.Api.Models
 {
-    public Guid Id { get; } = Guid.NewGuid();
-
-    [Required] public List<Message> Messages { get; } = new List<Message>();
-}
-
-public class Message
-{
-    public Guid Id { get; } = Guid.NewGuid();
- 
-    public string Content { get; set; }
-    
-    public DateTime CreatedAt { get; } = DateTime.Now;
-    
-    public Message([Required] string content)
+    // No logic so no unit tests are required
+    [ExcludeFromCodeCoverage]
+    public class Chat
     {
-        Content = content;
+        public Guid Id { get; } = Guid.NewGuid();
+
+        [Required]
+        public Collection<Message> Messages { get; } = new Collection<Message>();
     }
 
+    public class Message
+    {
+        public Guid Id { get; } = Guid.NewGuid();
+
+        public string Content { get; set; }
+
+        public DateTime CreatedAt { get; } = DateTime.Now;
+
+        public Message([Required] string content)
+        {
+            Content = content;
+        }
+    }
 }

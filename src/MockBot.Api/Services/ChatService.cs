@@ -1,38 +1,39 @@
 ﻿using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 
-namespace MockBot.Api.Services;
-
-public class ChatService : IChatService
+namespace MockBot.Api.Services
 {
-    private readonly Dictionary<Guid, Chat> _chats;
-
-    public ChatService()
+    public class ChatService : IChatService
     {
-        _chats = new Dictionary<Guid, Chat>();
-    }
+        private readonly Dictionary<Guid, Chat> _chats;
 
-    public Chat Create()
-    {
-        var chat = new Chat();
-        _chats.Add(chat.Id, chat);
-        return chat;
-    }
+        public ChatService()
+        {
+            _chats = new Dictionary<Guid, Chat>();
+        }
 
-    public IEnumerable<Chat> FindAll()
-    {
-        return _chats.Values.ToList();
-    }
+        public Chat CreateChat()
+        {
+            var chat = new Chat();
+            _chats.Add(chat.Id, chat);
+            return chat;
+        }
 
-    public Chat Get(Guid id)
-    {
-        return _chats[id];
-    }
+        public IEnumerable<Chat> FindAll()
+        {
+            return _chats.Values.ToList();
+        }
 
-    public Message CreateMessage(Guid chatId, string content)
-    {
-        var message = new Message(content);
-        Get(chatId).Messages.Add(message);
-        return message;
+        public Chat GetId(Guid id)
+        {
+            return _chats[id];
+        }
+
+        public Message AddMessage(Guid chatId, string content)
+        {
+            var message = new Message(content);
+            GetId(chatId).Messages.Add(message);
+            return message;
+        }
     }
 }

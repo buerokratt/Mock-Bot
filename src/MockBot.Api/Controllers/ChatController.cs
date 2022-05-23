@@ -2,45 +2,47 @@
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 
-namespace MockBot.Api.Controllers;
-
-[Route("api/chats")]
-public class ChatController : Controller
+namespace MockBot.Api.Controllers
 {
-    private readonly IChatService _chatService;
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ChatController : ControllerBase
+    {
+        private readonly IChatService _chatService;
 
-    public ChatController(IChatService chatService)
-    {
-        _chatService = chatService;
-    }
+        public ChatController(IChatService chatService)
+        {
+            _chatService = chatService;
+        }
 
-    [HttpGet]
-    public IEnumerable<Chat> FindAll()
-    {
-        return _chatService.FindAll();
-    }
+        [HttpGet]
+        public IEnumerable<Chat> FindAll()
+        {
+            return _chatService.FindAll();
+        }
 
-    [HttpGet("{id}")]
-    public Chat Get(Guid id)
-    {
-        return _chatService.Get(id);
-    }
-    
-    [HttpPost]
-    public Chat Post()
-    {
-        return _chatService.Create();
-    }
-    
-    [HttpGet("{chatId}/messages")]
-    public List<Message> GetMessages(Guid chatId)
-    {
-        return _chatService.Get(chatId).Messages;
-    }
+        [HttpGet("{id:guid}")]
+        public Chat Get(Guid id)
+        {
+            return _chatService.GetId(id);
+        }
 
-    [HttpPost("{chatId}/messages")]
-    public Message PostMessage(Guid chatId, [FromBody] string content)
-    {
-        return _chatService.CreateMessage(chatId, content);
+        [HttpPost]
+        public Chat Post()
+        {
+            return _chatService.CreateChat();
+        }
+
+        [HttpGet("{chatId:guid}/messages")]
+        public IEnumerable<Message> GetMessages(Guid chatId)
+        {
+            return _chatService.GetId(chatId).Messages;
+        }
+
+        [HttpPost("{chatId:guid}/messages")]
+        public Message PostMessage(Guid chatId, [FromBody] string content)
+        {
+            return _chatService.AddMessage(chatId, content);
+        }
     }
 }
