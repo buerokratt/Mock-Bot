@@ -44,7 +44,7 @@ namespace MockBot.UnitTests
             const string messageContent = "someText";
 
             var chat = _sut.CreateChat();
-            _sut.AddMessage(chat.Id, messageContent);
+            _ = _sut.AddMessage(chat.Id, messageContent);
 
             Assert.NotNull(_sut.GetId(chat.Id).Messages);
         }
