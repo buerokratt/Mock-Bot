@@ -35,7 +35,10 @@ namespace MockBot.Api.Services
             var message = new Message(content);
             var chat = FindById(chatId);
 
-            if (chat == null) return null;
+            if (chat == null)
+            {
+                return null;
+            }
 
             chat.Messages.Add(message);
             return message;
