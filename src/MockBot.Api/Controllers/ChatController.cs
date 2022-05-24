@@ -23,14 +23,14 @@ namespace MockBot.Api.Controllers
             return Ok(chats);
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Chat))]
+        [HttpGet("{chatId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult Get(Guid id)
+        public ActionResult<Chat> Get(Guid chatId)
         {
-            var chat = _chatService.FindById(id);
+            var chat = _chatService.FindById(chatId);
 
-            return chat == null ? NotFound() : Ok(chat);
+            return chat == null ? NotFound() : chat;
         }
 
         [HttpPost]

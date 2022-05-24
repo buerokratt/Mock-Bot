@@ -1,15 +1,16 @@
-﻿using MockBot.Api.Interfaces;
+﻿using System.Collections.Concurrent;
+using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 
 namespace MockBot.Api.Services
 {
     public class ChatService : IChatService
     {
-        private readonly Dictionary<Guid, Chat> _chats;
+        private readonly IDictionary<Guid, Chat> _chats;
 
         public ChatService()
         {
-            _chats = new Dictionary<Guid, Chat>();
+            _chats = new ConcurrentDictionary<Guid, Chat>();
         }
 
         public Chat CreateChat()
@@ -24,15 +25,19 @@ namespace MockBot.Api.Services
             return _chats.Values.ToList();
         }
 
-        public Chat FindById(Guid id)
+        public Chat? FindById(Guid chatId)
         {
-            return _chats[id];
+            return _chats.TryGetValue(chatId, out var chat) ? chat : null;
         }
 
-        public Message AddMessage(Guid chatId, string content)
+        public Message? AddMessage(Guid chatId, string content)
         {
             var message = new Message(content);
-            FindById(chatId).Messages.Add(message);
+            var chat = FindById(chatId);
+
+            if (chat == null) return null;
+
+            chat.Messages.Add(message);
             return message;
         }
     }

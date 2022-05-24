@@ -8,8 +8,8 @@ namespace MockBot.Api.Interfaces
 
         public IEnumerable<Chat> FindAll();
 
-        Chat? FindById(Guid id);
+        Chat? FindById(Guid chatId);
 
-        Message AddMessage(Guid chatId, string content);
+        Message? AddMessage(Guid chatId, string content);
     }
 }
