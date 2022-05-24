@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
@@ -11,67 +10,60 @@ namespace MockBot.UnitTests
 {
     public class ChatControllerTests
     {
-        private readonly ChatController sut;
-        private readonly Mock<IChatService> mockChatService;
-        private readonly Dictionary<Guid, Chat> _chats;
+        private readonly ChatController _sut;
+        private readonly Mock<IChatService> _mockChatService;
 
         public ChatControllerTests()
         {
-            mockChatService = new Mock<IChatService>();
-            sut = new ChatController(mockChatService.Object);
-            _chats = new Dictionary<Guid, Chat>();
+            _mockChatService = new Mock<IChatService>();
+            _sut = new ChatController(_mockChatService.Object);
         }
 
         [Fact]
-        public void FindAll()
+        public void ShouldReturnAllChats()
         {
-            _ = mockChatService.Setup(mock => mock.CreateChat()).Returns(new Chat());
-            var chat = sut.Post();
-            _chats.Add(chat.Id, chat);
+            var chat1 = new Chat();
+            var chat2 = new Chat();
+            var mockChats = new List<Chat>() { chat1, chat2 };
+            _ = _mockChatService.Setup(mock => mock.FindAll()).Returns(mockChats);
 
-            _ = mockChatService.Setup(mock => mock.FindAll()).Returns(_chats.Values.ToList());
-            var findAll = sut.FindAll();
+            var result = _sut.FindAll();
 
-            Assert.Equal(_chats.Count, findAll.Count());
+            Assert.Equal(200, result.StatusCode);
+            var resultList = Assert.IsType<List<Chat>>(result.Value);
+            Assert.Equal(2, resultList.Count);
+            Assert.Contains(chat1, resultList);
+            Assert.Contains(chat2, resultList);
         }
 
         [Fact]
-        public void Get()
+        public void ShouldCreateAndReturnChat()
         {
             var chat = new Chat();
+            _ = _mockChatService.Setup(mock => mock.CreateChat()).Returns(chat);
 
-            _ = mockChatService.Setup(mock => mock.GetId(chat.Id)).Returns(chat);
-            var getChat = sut.Get(chat.Id);
+            var result = _sut.Post();
 
-            Assert.Equal(chat.Id, getChat.Id);
+            Assert.Equal(201, result.StatusCode);
+            var resultChat = Assert.IsType<Chat>(result.Value);
+            Assert.NotEmpty(resultChat.Id.ToString());
+            Assert.Equal($"/chats/{resultChat.Id}", result.Location);
         }
 
         [Fact]
-        public void PostMessages()
+        public void ShouldAddMessageToChat()
         {
             const string messageContent = "Some text";
             var message = new Message(messageContent);
-            var messageList = new List<Message> { message };
             var chat = new Chat();
-            chat.Messages.Add(message);
+            var currentDateTime = new DateTime();
+            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, messageContent)).Returns(message);
 
-            _ = mockChatService.Setup(mock => mock.AddMessage(chat.Id, messageContent)).Returns(message);
-            _ = mockChatService.Setup(mock => mock.GetId(chat.Id)).Returns(chat);
+            var result = _sut.PostMessage(chat.Id, messageContent);
 
-            var postMessage = sut.PostMessage(chat.Id, messageContent);
-            var getMessages = sut.GetMessages(chat.Id);
-
-            Assert.Equal(messageContent, postMessage.Content);
-            Assert.Equal(messageList.Count, getMessages.Count());
-        }
-
-        [Fact]
-        public void Post()
-        {
-            _ = mockChatService.Setup(mock => mock.CreateChat()).Returns(new Chat());
-            var chat = sut.Post();
-
-            Assert.NotNull(chat);
+            var resultMessage = Assert.IsType<Message>(result.Value);
+            Assert.NotEmpty(resultMessage.Id.ToString());
+            Assert.True(currentDateTime < resultMessage.CreatedAt);
         }
     }
 }

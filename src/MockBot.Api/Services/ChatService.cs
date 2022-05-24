@@ -24,7 +24,7 @@ namespace MockBot.Api.Services
             return _chats.Values.ToList();
         }
 
-        public Chat GetId(Guid id)
+        public Chat FindById(Guid id)
         {
             return _chats[id];
         }
@@ -32,7 +32,7 @@ namespace MockBot.Api.Services
         public Message AddMessage(Guid chatId, string content)
         {
             var message = new Message(content);
-            GetId(chatId).Messages.Add(message);
+            FindById(chatId).Messages.Add(message);
             return message;
         }
     }

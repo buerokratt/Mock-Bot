@@ -4,7 +4,7 @@ using MockBot.Api.Models;
 
 namespace MockBot.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/chats")]
     [ApiController]
     public class ChatController : ControllerBase
     {
@@ -16,33 +16,38 @@ namespace MockBot.Api.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Chat> FindAll()
+        public OkObjectResult FindAll()
         {
-            return _chatService.FindAll();
+            var chats = _chatService.FindAll();
+
+            return Ok(chats);
         }
 
-        [HttpGet("{id:guid}")]
-        public Chat Get(Guid id)
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Chat))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult Get(Guid id)
         {
-            return _chatService.GetId(id);
+            var chat = _chatService.FindById(id);
+
+            return chat == null ? NotFound() : Ok(chat);
         }
 
         [HttpPost]
-        public Chat Post()
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Chat))]
+        public CreatedResult Post()
         {
-            return _chatService.CreateChat();
+            var chat = _chatService.CreateChat();
+
+            return Created(new Uri($"/chats/{chat.Id}", UriKind.Relative), chat);
         }
 
-        [HttpGet("{chatId:guid}/messages")]
-        public IEnumerable<Message> GetMessages(Guid chatId)
+        [HttpPost("{chatId}/messages")]
+        public CreatedResult PostMessage(Guid chatId, [FromBody] string content)
         {
-            return _chatService.GetId(chatId).Messages;
-        }
+            var message = _chatService.AddMessage(chatId, content);
 
-        [HttpPost("{chatId:guid}/messages")]
-        public Message PostMessage(Guid chatId, [FromBody] string content)
-        {
-            return _chatService.AddMessage(chatId, content);
+            return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
         }
     }
 }
