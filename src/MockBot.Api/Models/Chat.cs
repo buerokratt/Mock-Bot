@@ -14,6 +14,8 @@ namespace MockBot.Api.Models
         public Collection<Message> Messages { get; } = new Collection<Message>();
     }
 
+    // No logic so no unit tests are required
+    [ExcludeFromCodeCoverage]
     public class Message
     {
         public Guid Id { get; } = Guid.NewGuid();

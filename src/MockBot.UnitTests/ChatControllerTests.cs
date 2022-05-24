@@ -30,9 +30,39 @@ namespace MockBot.UnitTests
             _chats.Add(chat.Id, chat);
 
             _ = mockChatService.Setup(mock => mock.FindAll()).Returns(_chats.Values.ToList());
-            var findAllChats = sut.FindAll();
+            var findAll = sut.FindAll();
 
-            Assert.Equal(_chats.Count, findAllChats.Count());
+            Assert.Equal(_chats.Count, findAll.Count());
+        }
+
+        [Fact]
+        public void Get()
+        {
+            var chat = new Chat();
+
+            _ = mockChatService.Setup(mock => mock.GetId(chat.Id)).Returns(chat);
+            var getChat = sut.Get(chat.Id);
+
+            Assert.Equal(chat.Id, getChat.Id);
+        }
+
+        [Fact]
+        public void PostMessages()
+        {
+            const string messageContent = "Some text";
+            var message = new Message(messageContent);
+            var messageList = new List<Message> { message };
+            var chat = new Chat();
+            chat.Messages.Add(message);
+
+            _ = mockChatService.Setup(mock => mock.AddMessage(chat.Id, messageContent)).Returns(message);
+            _ = mockChatService.Setup(mock => mock.GetId(chat.Id)).Returns(chat);
+
+            var postMessage = sut.PostMessage(chat.Id, messageContent);
+            var getMessages = sut.GetMessages(chat.Id);
+
+            Assert.Equal(messageContent, postMessage.Content);
+            Assert.Equal(messageList.Count, getMessages.Count());
         }
 
         [Fact]
