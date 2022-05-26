@@ -16,15 +16,15 @@ namespace MockBot.Api.Services
             _chatService = chatService;
         }
 
-        public void AddDmrMessage(HeadersInput? headersInput)
+        public void AddDmrMessage(string? XSentBy, string? XSendTo, string? XMessageId, string? XMessageIdRef)
         {
-            if (headersInput == null || headersInput.XMessageIdRef == null)
+            if (XMessageIdRef == null)
             {
                 return;
             }
 
-            var message = _dmrRequests[headersInput.XMessageIdRef];
-            _chatService.AddMessageMetadata(message, headersInput);
+            var message = _dmrRequests[XMessageIdRef];
+            _chatService.AddMessageMetadata(message, XSentBy, XSendTo, XMessageId, XMessageIdRef);
         }
     }
 }

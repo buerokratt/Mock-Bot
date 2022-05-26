@@ -50,10 +50,10 @@ namespace MockBot.Api.Services
             return message;
         }
 
-        public void AddMessageMetadata([NotNull] Message message, [NotNull] HeadersInput headersInput)
+        public void AddMessageMetadata([NotNull] Message message, string? XSentBy, string? XSendTo, string? XMessageId, string? XMessageIdRef)
         {
-            message.SentBy = headersInput.XSentBy;
-            message.SendTo = headersInput.XSendTo;
+            message.SentBy = XSentBy;
+            message.SendTo = XSendTo;
         }
     }
 }

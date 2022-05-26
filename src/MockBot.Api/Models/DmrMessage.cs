@@ -6,7 +6,7 @@ namespace MockBot.Api.Models
     [ExcludeFromCodeCoverage]
     public class DmrMessage
     {
-        public string MessageRefId { get; }
+        public string MessageIdRef { get; }
 
         public string SentBy { get; }
 
@@ -14,9 +14,9 @@ namespace MockBot.Api.Models
 
         public string Payload { get; }
 
-        public DmrMessage(string messageRefId, string sentBy, string sendTo, string payload)
+        public DmrMessage(string messageIdRef, string sentBy, string sendTo, string payload)
         {
-            MessageRefId = messageRefId;
+            MessageIdRef = messageIdRef;
             SentBy = sentBy;
             SendTo = sendTo;
             Payload = payload;
