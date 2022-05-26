@@ -4,7 +4,7 @@ using MockBot.Api.Models;
 
 namespace MockBot.Api.Controllers
 {
-    [Route("api/chats")]
+    [Route("client-api/chats")]
     [ApiController]
     public class ChatController : ControllerBase
     {

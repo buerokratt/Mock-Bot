@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 
@@ -30,6 +31,11 @@ namespace MockBot.Api.Services
             return _chats.TryGetValue(chatId, out var chat) ? chat : null;
         }
 
+        public Message? FindById(Guid chatId, string messageId)
+        {
+            return _chats[chatId].Messages.First(message => message.Id == Guid.Parse(messageId));
+        }
+
         public Message? AddMessage(Guid chatId, string content)
         {
             var message = new Message(content);
@@ -42,6 +48,12 @@ namespace MockBot.Api.Services
 
             chat.Messages.Add(message);
             return message;
+        }
+
+        public void AddMessageMetadata([NotNull] Message message, [NotNull] HeadersInput headersInput)
+        {
+            message.SentBy = headersInput.XSentBy;
+            message.SendTo = headersInput.XSendTo;
         }
     }
 }

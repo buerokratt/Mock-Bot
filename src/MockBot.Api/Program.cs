@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using MockBot.Api.Interfaces;
+using MockBot.Api.Models;
 using MockBot.Api.Services;
 
 namespace MockBot.Api
@@ -18,6 +19,7 @@ namespace MockBot.Api
             _ = builder.Services.AddEndpointsApiExplorer();
             _ = builder.Services.AddSwaggerGen();
             _ = builder.Services.AddSingleton<IChatService, ChatService>();
+            _ = builder.Services.AddSingleton<IDmrService, DmrService>();
 
             var app = builder.Build();
 
