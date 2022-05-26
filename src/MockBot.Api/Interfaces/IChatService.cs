@@ -1,4 +1,5 @@
-﻿using MockBot.Api.Models;
+﻿using System.Diagnostics.CodeAnalysis;
+using MockBot.Api.Models;
 
 namespace MockBot.Api.Interfaces
 {
@@ -11,5 +12,7 @@ namespace MockBot.Api.Interfaces
         Chat? FindById(Guid chatId);
 
         Message? AddMessage(Guid chatId, string content);
+
+        public void AddMessageMetadata(Message message, HeadersInput headersInput);
     }
 }

@@ -12,6 +12,8 @@ namespace MockBot.Api.Models
 
         [Required]
         public Collection<Message> Messages { get; } = new Collection<Message>();
+
+        public DateTime CreatedAt { get; } = DateTime.Now;
     }
 
     // No logic so no unit tests are required
@@ -20,7 +22,11 @@ namespace MockBot.Api.Models
     {
         public Guid Id { get; } = Guid.NewGuid();
 
-        public string Content { get; set; }
+        public string? SentBy { get; set; }
+
+        public string? SendTo { get; set; }
+
+        public string Content { get; }
 
         public DateTime CreatedAt { get; } = DateTime.Now;
 
