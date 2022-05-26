@@ -1,10 +1,10 @@
 openapi: 3.0.3
 info:
   title: Mock Bot API
-  version: '1.0'
+  version: 0.1.0
   description: Lightweight component used to demonstrate chatbot integration with a Distributed Message Room.
   license:
-    name: MIT-0
+    name: MIT
     url: 'https://opensource.org/licenses/MIT'
 servers:
   - url: 'http://localhost:3000'
@@ -78,40 +78,6 @@ paths:
         name: chatId
         in: path
         required: true
-    get:
-      summary: Your GET endpoint
-      tags: []
-      operationId: get-chats-chatId-messages
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  title: Message
-                  x-stoplight:
-                    id: 8rb81u2ztllz0
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uuid
-                      readOnly: true
-                    content:
-                      type: string
-                      example: 'Hi, I need to update my drivers licence.'
-                    createdAt:
-                      type: string
-                      format: date-time
-                      example: '2022-05-13T11:28:29.972Z'
-                      readOnly: true
-                  required:
-                    - id
-                    - content
-                    - createdAt
-      description: ''
     post:
       summary: ''
       operationId: post-chats-chatId-messages
@@ -178,14 +144,20 @@ paths:
           description: Accepted
       description: Receive message from DMR.
       parameters:
-        - name: X-Sent-From
+        - name: X-Send-To
           in: header
           required: true
           schema:
             type: string
-            format: uuid
-            example: b4ac37cf-1ae9-429e-9d05-22d7db901ef3
-          description: Uuid of the participant that sent the message.
+            example: Classifier
+          description: Participant name to send the message to.
+        - name: X-Sent-By
+          in: header
+          required: true
+          schema:
+            type: string
+            example: NLib
+          description: Name of the participant that sent the message.
         - name: X-Message-Id
           in: header
           required: true
@@ -203,25 +175,22 @@ paths:
           description: Reference to the original X-Message-Id we are replying to.
       requestBody:
         content:
-          text/plain:
+          application/x.classifier.classification+json;version=1:
             schema:
-              type: string
-          application/json:
-            schema:
-              title: ClassificationResponse
+              title: Classification
               type: object
-              description: ''
               properties:
-                messages:
-                  type: array
-                  items:
-                    type: string
+                message:
+                  type: string
+                  example: Greetings from Estonia!
                 classification:
                   type: string
+                  example: NLib
+                context:
+                  type: object
               required:
-                - messages
+                - message
                 - classification
-        description: Encrypted payload
 components:
   schemas:
     Chat:
@@ -289,6 +258,45 @@ components:
         - id
         - content
         - createdAt
-  requestBodies: {}
+    Classification:
+      title: Classification
+      x-stoplight:
+        id: drwn2c9wcv5pp
+      type: object
+      x-examples: {}
+      properties:
+        message:
+          type: string
+          example: Greetings from Estonia!
+        classification:
+          type: string
+          example: NLib
+        context:
+          type: object
+      required:
+        - message
+        - classification
+  requestBodies:
+    Classification:
+      content:
+        application/x.classifier.classification+json;version=1:
+          schema:
+            title: Classification
+            x-stoplight:
+              id: drwn2c9wcv5pp
+            type: object
+            x-examples: {}
+            properties:
+              message:
+                type: string
+                example: Greetings from Estonia!
+              classification:
+                type: string
+                example: NLib
+              context:
+                type: object
+            required:
+              - message
+              - classification
   responses: {}
   securitySchemes: {}
