@@ -65,9 +65,6 @@ paths:
             schema:
               type: object
               properties: {}
-            examples:
-              example-1:
-                value: {}
     parameters: []
   '/client-api/chats/{chatId}/messages':
     parameters:
@@ -88,8 +85,6 @@ paths:
             application/json:
               schema:
                 title: Message
-                x-stoplight:
-                  id: 8rb81u2ztllz0
                 type: object
                 properties:
                   id:
@@ -114,8 +109,6 @@ paths:
           application/json:
             schema:
               title: Message
-              x-stoplight:
-                id: 8rb81u2ztllz0
               type: object
               properties:
                 id:
@@ -139,9 +132,6 @@ paths:
     post:
       summary: ''
       operationId: post-dmr-api-messages
-      responses:
-        '202':
-          description: Accepted
       description: Receive message from DMR.
       parameters:
         - name: X-Send-To
@@ -175,7 +165,7 @@ paths:
           description: Reference to the original X-Message-Id we are replying to.
       requestBody:
         content:
-          application/x.classifier.classification+json;version=1:
+          application/vnd.classifier.classification+json;version=1:
             schema:
               title: Classification
               type: object
@@ -191,12 +181,13 @@ paths:
               required:
                 - message
                 - classification
+      responses:
+        '202':
+          description: Accepted
 components:
   schemas:
     Chat:
       title: Chat
-      x-stoplight:
-        id: 0wi8ep6tujz0u
       type: object
       properties:
         id:
@@ -208,8 +199,6 @@ components:
           type: array
           items:
             title: Message
-            x-stoplight:
-              id: 8rb81u2ztllz0
             type: object
             properties:
               id:
@@ -238,8 +227,6 @@ components:
         - createdAt
     Message:
       title: Message
-      x-stoplight:
-        id: 8rb81u2ztllz0
       type: object
       properties:
         id:
@@ -260,10 +247,7 @@ components:
         - createdAt
     Classification:
       title: Classification
-      x-stoplight:
-        id: drwn2c9wcv5pp
       type: object
-      x-examples: {}
       properties:
         message:
           type: string
@@ -276,27 +260,3 @@ components:
       required:
         - message
         - classification
-  requestBodies:
-    Classification:
-      content:
-        application/x.classifier.classification+json;version=1:
-          schema:
-            title: Classification
-            x-stoplight:
-              id: drwn2c9wcv5pp
-            type: object
-            x-examples: {}
-            properties:
-              message:
-                type: string
-                example: Greetings from Estonia!
-              classification:
-                type: string
-                example: NLib
-              context:
-                type: object
-            required:
-              - message
-              - classification
-  responses: {}
-  securitySchemes: {}
