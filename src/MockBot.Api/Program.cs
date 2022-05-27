@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using MockBot.Api.Interfaces;
-using MockBot.Api.Models;
 using MockBot.Api.Services;
 
 namespace MockBot.Api

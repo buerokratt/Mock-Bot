@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 
