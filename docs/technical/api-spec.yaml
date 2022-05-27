@@ -176,8 +176,6 @@ paths:
                 classification:
                   type: string
                   example: NLib
-                context:
-                  type: object
               required:
                 - message
                 - classification
@@ -255,8 +253,6 @@ components:
         classification:
           type: string
           example: NLib
-        context:
-          type: object
       required:
         - message
         - classification
