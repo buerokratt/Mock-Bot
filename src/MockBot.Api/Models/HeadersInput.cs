@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MockBot.Api.Models
 {
+    // No logic so no unit tests are required
+    [ExcludeFromCodeCoverage]
     public class HeadersInput
     {
         [Required]

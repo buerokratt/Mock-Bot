@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 
@@ -7,33 +6,44 @@ namespace MockBot.Api.Services
 {
     public class ChatService : IChatService
     {
-        private readonly IDictionary<Guid, Chat> _chats;
+        private static IDictionary<Guid, Chat>? Chats { get; set; }
+        private IDictionary<string, Message> DmrRequests { get; }
 
         public ChatService()
         {
-            _chats = new ConcurrentDictionary<Guid, Chat>();
+            Chats = new ConcurrentDictionary<Guid, Chat>();
+            DmrRequests = new ConcurrentDictionary<string, Message>();
         }
 
         public Chat CreateChat()
         {
             var chat = new Chat();
-            _chats.Add(chat.Id, chat);
+
+            Chats ??= new ConcurrentDictionary<Guid, Chat>();
+
+            Chats.Add(chat.Id, chat);
             return chat;
         }
 
         public IEnumerable<Chat> FindAll()
         {
-            return _chats.Values.ToList();
+            Chats ??= new ConcurrentDictionary<Guid, Chat>();
+
+            return Chats.Values.ToList();
         }
 
         public Chat? FindById(Guid chatId)
         {
-            return _chats.TryGetValue(chatId, out var chat) ? chat : null;
+            Chats ??= new ConcurrentDictionary<Guid, Chat>();
+
+            return Chats.TryGetValue(chatId, out var chat) ? chat : null;
         }
 
         public Message? FindById(Guid chatId, string messageId)
         {
-            return _chats[chatId].Messages.First(message => message.Id == Guid.Parse(messageId));
+            Chats ??= new ConcurrentDictionary<Guid, Chat>();
+
+            return Chats[chatId].Messages.First(message => message.Id == Guid.Parse(messageId));
         }
 
         public Message? AddMessage(Guid chatId, string content)
@@ -50,10 +60,36 @@ namespace MockBot.Api.Services
             return message;
         }
 
-        public void AddMessageMetadata([NotNull] Message message, string? XSentBy, string? XSendTo, string? XMessageId, string? XMessageIdRef)
+        public void AddMessageMetadata(string? xSentBy, string? xSendTo, string? xMessageId, string? xMessageIdRef)
         {
-            message.SentBy = XSentBy;
-            message.SendTo = XSendTo;
+            if (xMessageIdRef == null)
+            {
+                return;
+            }
+
+            var message = DmrRequests[xMessageIdRef];
+            message.SentBy = xSentBy;
+            message.SendTo = xSendTo;
+        }
+
+        public void AddDmrMessage(string? xSentBy, string? xSendTo, string? xMessageId, string? xMessageIdRef)
+        {
+            if (xMessageIdRef == null)
+            {
+                return;
+            }
+
+            AddMessageMetadata(xSentBy, xSendTo, xMessageId, xMessageIdRef);
+        }
+
+        public void AddDmrRequest(Message? message)
+        {
+            if (message == null)
+            {
+                return;
+            }
+
+            DmrRequests.Add(message.Id.ToString(), message);
         }
     }
 }

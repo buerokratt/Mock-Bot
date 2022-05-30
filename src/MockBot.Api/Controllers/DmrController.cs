@@ -4,27 +4,29 @@ using MockBot.Api.Interfaces;
 
 namespace MockBot.Api.Controllers
 {
-    [Route("dmr-api/messages")]
+    [Route("dmr-api")]
     [ApiController]
     public class DmrController : ControllerBase
     {
+        private readonly IChatService _chatService;
         private readonly IDmrService _dmrService;
 
-        public DmrController(IDmrService dmrService)
+        public DmrController(IChatService chatService, IDmrService dmrService)
         {
+            _chatService = chatService;
             _dmrService = dmrService;
         }
 
-        [HttpPost("dmr-response/{messageIdRef}")]
+        [HttpPost("dmr-response")]
         [Consumes("application/vnd.classifier.classification+json;version=1")]
         public AcceptedResult PostDmrMessage(
-            [Required][FromHeader(Name = "X-Sent-By")] string? XSentBy,
-            [Required][FromHeader(Name = "X-Send-To")] string? XSendTo,
-            [Required][FromHeader(Name = "X-Message-Id")] string? XMessageId,
-            [Required][FromHeader(Name = "X-Message-Id-Ref")] string? XMessageIdRef
+            [Required][FromHeader(Name = "X-Sent-By")] string? xSentBy,
+            [Required][FromHeader(Name = "X-Send-To")] string? xSendTo,
+            [Required][FromHeader(Name = "X-Message-Id")] string? xMessageId,
+            [Required][FromHeader(Name = "X-Message-Id-Ref")] string? xMessageIdRef
         )
         {
-            _dmrService.AddDmrMessage(XSentBy, XSendTo, XMessageId, XMessageIdRef);
+            _chatService.AddMessageMetadata(xSentBy, xSendTo, xMessageId, xMessageIdRef);
             return Accepted();
         }
     }

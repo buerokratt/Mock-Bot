@@ -6,24 +6,21 @@ namespace MockBot.Api.Services
 {
     public class DmrService : IDmrService
     {
-        private readonly IDictionary<string, Message> _dmrRequests;
-        private readonly IChatService _chatService;
+        public IDictionary<string, Message> DmrRequests { get; }
 
-        public DmrService(IChatService chatService)
+        public DmrService()
         {
-            _dmrRequests = new ConcurrentDictionary<string, Message>();
-            _chatService = chatService;
+            DmrRequests = new ConcurrentDictionary<string, Message>();
         }
 
-        public void AddDmrMessage(string? XSentBy, string? XSendTo, string? XMessageId, string? XMessageIdRef)
+        public void AddDmrRequest(Message? message)
         {
-            if (XMessageIdRef == null)
+            if (message == null)
             {
                 return;
             }
 
-            var message = _dmrRequests[XMessageIdRef];
-            _chatService.AddMessageMetadata(message, XSentBy, XSendTo, XMessageId, XMessageIdRef);
+            DmrRequests.Add(message.Id.ToString(), message);
         }
     }
 }

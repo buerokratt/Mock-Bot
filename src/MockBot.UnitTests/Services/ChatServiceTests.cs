@@ -1,7 +1,7 @@
 ﻿using MockBot.Api.Services;
 using Xunit;
 
-namespace MockBot.UnitTests
+namespace MockBot.UnitTests.Services
 {
     public class ChatServiceTests
     {

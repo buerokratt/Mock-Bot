@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 using Moq;
 using Xunit;
 
-namespace MockBot.UnitTests
+namespace MockBot.UnitTests.Controllers
 {
-    public class ChatControllerTests
+    public class ChatControllerTests : ControllerBase
     {
         private readonly ChatController _sut;
         private readonly Mock<IChatService> _mockChatService;
@@ -17,6 +18,21 @@ namespace MockBot.UnitTests
         {
             _mockChatService = new Mock<IChatService>();
             _sut = new ChatController(_mockChatService.Object);
+        }
+
+        [Fact]
+        public void ShouldReturnSingleChat()
+        {
+            var chat = new Chat();
+            // var createdChat = Assert.IsType<Chat>(chat.Value);
+            _ = _mockChatService.Setup(mock => mock.CreateChat())
+                .Returns(chat);
+            _ = _mockChatService.Setup(mock => mock.FindById(chat.Id)).Returns(chat);
+
+            var result = _sut.Get(chat.Id);
+
+            var resultChat = Assert.IsType<Chat>(result.Value);
+            Assert.Equal(chat.Id, resultChat.Id);
         }
 
         [Fact]
