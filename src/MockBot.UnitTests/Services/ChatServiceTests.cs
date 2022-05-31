@@ -13,7 +13,7 @@ namespace MockBot.UnitTests.Services
         }
 
         [Fact]
-        public void Create()
+        public void ShouldCreateChat()
         {
             var result = _sut.CreateChat();
 
@@ -21,7 +21,7 @@ namespace MockBot.UnitTests.Services
         }
 
         [Fact]
-        public void FindAll()
+        public void ShouldFindAllCreatedChats()
         {
             var chat = _sut.CreateChat();
             var result = _sut.FindAll();
@@ -30,7 +30,7 @@ namespace MockBot.UnitTests.Services
         }
 
         [Fact]
-        public void GetId()
+        public void ShouldGetChatById()
         {
             var chat = _sut.CreateChat();
             var result = _sut.FindById(chat.Id);
@@ -39,7 +39,7 @@ namespace MockBot.UnitTests.Services
         }
 
         [Fact]
-        public void CreateMessage()
+        public void ShouldCreateMessage()
         {
             const string messageContent = "someText";
 

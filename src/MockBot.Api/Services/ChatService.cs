@@ -72,16 +72,6 @@ namespace MockBot.Api.Services
             message.SendTo = xSendTo;
         }
 
-        public void AddDmrMessage(string? xSentBy, string? xSendTo, string? xMessageId, string? xMessageIdRef)
-        {
-            if (xMessageIdRef == null)
-            {
-                return;
-            }
-
-            AddMessageMetadata(xSentBy, xSendTo, xMessageId, xMessageIdRef);
-        }
-
         public void AddDmrRequest(Message? message)
         {
             if (message == null)
