@@ -10,13 +10,11 @@ namespace MockBot.UnitTests.Controllers
     {
         private readonly DmrController _sut;
         private readonly Mock<IChatService> _mockChatService;
-        private readonly Mock<IDmrService> _mockDmrService;
 
         public DmrControllerTests()
         {
             _mockChatService = new Mock<IChatService>();
-            _mockDmrService = new Mock<IDmrService>();
-            _sut = new DmrController(_mockChatService.Object, _mockDmrService.Object);
+            _sut = new DmrController(_mockChatService.Object);
         }
 
         [Fact]
@@ -27,7 +25,6 @@ namespace MockBot.UnitTests.Controllers
             var xSendTo = "receiver";
             var xMessageId = "dmrMessage";
             var xMessageIdRef = message.Id.ToString();
-            // _ = _mockDmrService.Setup(mock => mock.AddDmrRequest(message)).Callback(() => {});
 
             var result = _sut.PostDmrMessage(xSentBy, xSendTo, xMessageId, xMessageIdRef);
 

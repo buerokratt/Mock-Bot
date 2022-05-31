@@ -9,12 +9,10 @@ namespace MockBot.Api.Controllers
     public class DmrController : ControllerBase
     {
         private readonly IChatService _chatService;
-        private readonly IDmrService _dmrService;
 
-        public DmrController(IChatService chatService, IDmrService dmrService)
+        public DmrController(IChatService chatService)
         {
             _chatService = chatService;
-            _dmrService = dmrService;
         }
 
         [HttpPost("dmr-response")]
