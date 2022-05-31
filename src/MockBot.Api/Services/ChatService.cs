@@ -6,7 +6,7 @@ namespace MockBot.Api.Services
 {
     public class ChatService : IChatService
     {
-        private static IDictionary<Guid, Chat>? Chats { get; set; }
+        private IDictionary<Guid, Chat>? Chats { get; set; }
         public IDictionary<string, Message> DmrRequests { get; }
 
         public ChatService()
@@ -53,17 +53,17 @@ namespace MockBot.Api.Services
             return message;
         }
 
-        public void AddMessageMetadata(string? xSentBy, string? xSendTo, string? xMessageId, string? xMessageIdRef, string? xModelType)
+        public void AddMessageMetadata(HeadersInput? headers)
         {
-            if (xMessageIdRef == null)
+            if (headers?.XMessageIdRef == null)
             {
                 return;
             }
 
-            var message = DmrRequests[xMessageIdRef];
-            message.SentBy = xSentBy;
-            message.SendTo = xSendTo;
-            message.ModelType = xModelType;
+            var message = DmrRequests[headers.XMessageIdRef];
+            message.SentBy = headers.XSentBy;
+            message.SendTo = headers.XSendTo;
+            message.ModelType = headers.XModelType;
         }
 
         public void AddDmrRequest(Message? message)

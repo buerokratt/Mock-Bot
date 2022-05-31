@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Interfaces;
+using MockBot.Api.Models;
 
 namespace MockBot.Api.Controllers
 {
@@ -17,15 +17,9 @@ namespace MockBot.Api.Controllers
 
         [HttpPost("dmr-response")]
         [Consumes("application/vnd.classifier.classification+json;version=1")]
-        public AcceptedResult PostDmrMessage(
-            [Required][FromHeader(Name = "X-Sent-By")] string? xSentBy,
-            [Required][FromHeader(Name = "X-Send-To")] string? xSendTo,
-            [Required][FromHeader(Name = "X-Message-Id")] string? xMessageId,
-            [Required][FromHeader(Name = "X-Message-Id-Ref")] string? xMessageIdRef,
-            [Required][FromHeader(Name = "X-Model-Type")] string? xModelType
-        )
+        public AcceptedResult PostDmrMessage([FromHeader] HeadersInput headers)
         {
-            _chatService.AddMessageMetadata(xSentBy, xSendTo, xMessageId, xMessageIdRef, xModelType);
+            _chatService.AddMessageMetadata(headers);
             return Accepted();
         }
     }

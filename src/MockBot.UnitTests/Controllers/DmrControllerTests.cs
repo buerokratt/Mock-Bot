@@ -27,7 +27,14 @@ namespace MockBot.UnitTests.Controllers
             var xModelType = "good";
             var xMessageIdRef = message.Id.ToString();
 
-            var result = _sut.PostDmrMessage(xSentBy, xSendTo, xMessageId, xMessageIdRef, xModelType);
+            var result = _sut.PostDmrMessage(new HeadersInput
+            {
+                XMessageId = xMessageId,
+                XMessageIdRef = xMessageIdRef,
+                XSendTo = xSendTo,
+                XSentBy = xSentBy,
+                XModelType = xModelType
+            });
 
             Assert.Equal(202, result.StatusCode);
         }
