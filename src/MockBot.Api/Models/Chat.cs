@@ -13,7 +13,7 @@ namespace MockBot.Api.Models
         [Required]
         public Collection<Message> Messages { get; } = new Collection<Message>();
 
-        public DateTime CreatedAt { get; } = DateTime.Now;
+        public DateTime CreatedAt { get; } = DateTime.UtcNow;
     }
 
     // No logic so no unit tests are required
@@ -28,7 +28,7 @@ namespace MockBot.Api.Models
 
         public string Content { get; }
 
-        public DateTime CreatedAt { get; } = DateTime.Now;
+        public DateTime CreatedAt { get; } = DateTime.UtcNow;
 
         public string? ModelType { get; set; }
 
