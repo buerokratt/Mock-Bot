@@ -6,7 +6,7 @@ namespace MockBot.Api.Services
 {
     public class ChatService : IChatService
     {
-        private IDictionary<Guid, Chat>? Chats { get; set; }
+        private IDictionary<Guid, Chat> Chats { get; set; }
         public IDictionary<string, Message> DmrRequests { get; }
 
         public ChatService()
@@ -19,23 +19,17 @@ namespace MockBot.Api.Services
         {
             var chat = new Chat();
 
-            Chats ??= new ConcurrentDictionary<Guid, Chat>();
-
             Chats.Add(chat.Id, chat);
             return chat;
         }
 
         public IEnumerable<Chat> FindAll()
         {
-            Chats ??= new ConcurrentDictionary<Guid, Chat>();
-
             return Chats.Values.ToList();
         }
 
         public Chat? FindById(Guid chatId)
         {
-            Chats ??= new ConcurrentDictionary<Guid, Chat>();
-
             return Chats.TryGetValue(chatId, out var chat) ? chat : null;
         }
 
