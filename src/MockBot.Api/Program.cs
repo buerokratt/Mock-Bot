@@ -18,7 +18,6 @@ namespace MockBot.Api
             _ = builder.Services.AddEndpointsApiExplorer();
             _ = builder.Services.AddSwaggerGen();
             _ = builder.Services.AddSingleton<IChatService, ChatService>();
-            _ = builder.Services.AddSingleton<IDmrService, DmrService>();
 
             var app = builder.Build();
 
