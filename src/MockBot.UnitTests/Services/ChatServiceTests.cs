@@ -1,4 +1,5 @@
-﻿using MockBot.Api.Services;
+﻿using MockBot.Api.Models;
+using MockBot.Api.Services;
 using Xunit;
 
 namespace MockBot.UnitTests.Services
@@ -48,6 +49,31 @@ namespace MockBot.UnitTests.Services
 
             var result = _sut.FindById(chat.Id);
             Assert.NotNull(result!.Messages);
+        }
+
+        [Fact]
+        public void ShouldAddDmrRequests()
+        {
+            var message = new Message("Hello");
+
+            _sut.AddDmrRequest(message);
+
+            Assert.Equal(1, _sut.DmrRequests.Count);
+        }
+
+        [Fact]
+        public void ShouldAddMessageMetadata()
+        {
+            var message = new Message("Hello");
+            var xSentBy = "sender";
+            var xSendTo = "receiver";
+            var xMessageId = "some id";
+            _sut.AddDmrRequest(message);
+
+            _sut.AddMessageMetadata(xSentBy, xSendTo, xMessageId, message.Id.ToString());
+
+            Assert.Equal(xSentBy, message.SentBy);
+            Assert.Equal(xSendTo, message.SendTo);
         }
     }
 }

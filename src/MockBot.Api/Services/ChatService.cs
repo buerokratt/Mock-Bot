@@ -7,7 +7,7 @@ namespace MockBot.Api.Services
     public class ChatService : IChatService
     {
         private static IDictionary<Guid, Chat>? Chats { get; set; }
-        private IDictionary<string, Message> DmrRequests { get; }
+        public IDictionary<string, Message> DmrRequests { get; }
 
         public ChatService()
         {
