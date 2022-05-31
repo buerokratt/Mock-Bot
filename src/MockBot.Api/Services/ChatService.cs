@@ -53,7 +53,7 @@ namespace MockBot.Api.Services
             return message;
         }
 
-        public void AddMessageMetadata(string? xSentBy, string? xSendTo, string? xMessageId, string? xMessageIdRef)
+        public void AddMessageMetadata(string? xSentBy, string? xSendTo, string? xMessageId, string? xMessageIdRef, string? xModelType)
         {
             if (xMessageIdRef == null)
             {
@@ -63,6 +63,7 @@ namespace MockBot.Api.Services
             var message = DmrRequests[xMessageIdRef];
             message.SentBy = xSentBy;
             message.SendTo = xSendTo;
+            message.ModelType = xModelType;
         }
 
         public void AddDmrRequest(Message? message)

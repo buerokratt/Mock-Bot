@@ -21,10 +21,11 @@ namespace MockBot.Api.Controllers
             [Required][FromHeader(Name = "X-Sent-By")] string? xSentBy,
             [Required][FromHeader(Name = "X-Send-To")] string? xSendTo,
             [Required][FromHeader(Name = "X-Message-Id")] string? xMessageId,
-            [Required][FromHeader(Name = "X-Message-Id-Ref")] string? xMessageIdRef
+            [Required][FromHeader(Name = "X-Message-Id-Ref")] string? xMessageIdRef,
+            [Required][FromHeader(Name = "X-Model-Type")] string? xModelType
         )
         {
-            _chatService.AddMessageMetadata(xSentBy, xSendTo, xMessageId, xMessageIdRef);
+            _chatService.AddMessageMetadata(xSentBy, xSendTo, xMessageId, xMessageIdRef, xModelType);
             return Accepted();
         }
     }

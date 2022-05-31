@@ -30,6 +30,8 @@ namespace MockBot.Api.Models
 
         public DateTime CreatedAt { get; } = DateTime.Now;
 
+        public string? ModelType { get; set; }
+
         public Message([Required] string content)
         {
             Content = content;

@@ -24,9 +24,10 @@ namespace MockBot.UnitTests.Controllers
             var xSentBy = "sender";
             var xSendTo = "receiver";
             var xMessageId = "dmrMessage";
+            var xModelType = "good";
             var xMessageIdRef = message.Id.ToString();
 
-            var result = _sut.PostDmrMessage(xSentBy, xSendTo, xMessageId, xMessageIdRef);
+            var result = _sut.PostDmrMessage(xSentBy, xSendTo, xMessageId, xMessageIdRef, xModelType);
 
             Assert.Equal(202, result.StatusCode);
         }

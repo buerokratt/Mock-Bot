@@ -68,12 +68,14 @@ namespace MockBot.UnitTests.Services
             var xSentBy = "sender";
             var xSendTo = "receiver";
             var xMessageId = "some id";
+            var xModelType = "good";
             _sut.AddDmrRequest(message);
 
-            _sut.AddMessageMetadata(xSentBy, xSendTo, xMessageId, message.Id.ToString());
+            _sut.AddMessageMetadata(xSentBy, xSendTo, xMessageId, message.Id.ToString(), xModelType);
 
             Assert.Equal(xSentBy, message.SentBy);
             Assert.Equal(xSendTo, message.SendTo);
+            Assert.Equal(xModelType, message.ModelType);
         }
     }
 }
