@@ -39,13 +39,6 @@ namespace MockBot.Api.Services
             return Chats.TryGetValue(chatId, out var chat) ? chat : null;
         }
 
-        public Message? FindById(Guid chatId, string messageId)
-        {
-            Chats ??= new ConcurrentDictionary<Guid, Chat>();
-
-            return Chats[chatId].Messages.First(message => message.Id == Guid.Parse(messageId));
-        }
-
         public Message? AddMessage(Guid chatId, string content)
         {
             var message = new Message(content);
