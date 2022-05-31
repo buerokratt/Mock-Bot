@@ -3,7 +3,7 @@
 namespace MockBot.Api.Interfaces
 {
     /// <summary>
-    /// This class handles creating and retrieving chats and messages,
+    /// This interface handles creating and retrieving chats and messages,
     /// maintaining a list of requests sent to DMR,
     /// using the DMR request list to update the appropriate message with received metadata
     /// </summary>
