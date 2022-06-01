@@ -2,14 +2,23 @@
 
 namespace MockBot.Api.Interfaces
 {
+    /// <summary>
+    /// This interface handles creating and retrieving chats and messages,
+    /// maintaining a list of requests sent to DMR,
+    /// using the DMR request list to update the appropriate message with received metadata
+    /// </summary>
     public interface IChatService
     {
         public Chat CreateChat();
 
         public IEnumerable<Chat> FindAll();
 
-        Chat? FindById(Guid chatId);
+        public Chat? FindById(Guid chatId);
 
-        Message? AddMessage(Guid chatId, string content);
+        public void AddDmrRequest(Message message);
+
+        public Message? AddMessage(Guid chatId, string content);
+
+        public void AddMessageMetadata(HeadersInput headers);
     }
 }

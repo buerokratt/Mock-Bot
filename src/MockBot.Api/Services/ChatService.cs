@@ -6,28 +6,31 @@ namespace MockBot.Api.Services
 {
     public class ChatService : IChatService
     {
-        private readonly IDictionary<Guid, Chat> _chats;
+        private IDictionary<Guid, Chat> Chats { get; set; }
+        public IDictionary<string, Message> DmrRequests { get; }
 
         public ChatService()
         {
-            _chats = new ConcurrentDictionary<Guid, Chat>();
+            Chats = new ConcurrentDictionary<Guid, Chat>();
+            DmrRequests = new ConcurrentDictionary<string, Message>();
         }
 
         public Chat CreateChat()
         {
             var chat = new Chat();
-            _chats.Add(chat.Id, chat);
+
+            Chats.Add(chat.Id, chat);
             return chat;
         }
 
         public IEnumerable<Chat> FindAll()
         {
-            return _chats.Values.ToList();
+            return Chats.Values.ToList();
         }
 
         public Chat? FindById(Guid chatId)
         {
-            return _chats.TryGetValue(chatId, out var chat) ? chat : null;
+            return Chats.TryGetValue(chatId, out var chat) ? chat : null;
         }
 
         public Message? AddMessage(Guid chatId, string content)
@@ -42,6 +45,29 @@ namespace MockBot.Api.Services
 
             chat.Messages.Add(message);
             return message;
+        }
+
+        public void AddMessageMetadata(HeadersInput? headers)
+        {
+            if (headers?.XMessageIdRef == null)
+            {
+                return;
+            }
+
+            var message = DmrRequests[headers.XMessageIdRef];
+            message.SentBy = headers.XSentBy;
+            message.SendTo = headers.XSendTo;
+            message.ModelType = headers.XModelType;
+        }
+
+        public void AddDmrRequest(Message? message)
+        {
+            if (message == null)
+            {
+                return;
+            }
+
+            DmrRequests.Add(message.Id.ToString(), message);
         }
     }
 }
