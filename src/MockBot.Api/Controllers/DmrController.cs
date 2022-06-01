@@ -16,7 +16,6 @@ namespace MockBot.Api.Controllers
         }
 
         [HttpPost("dmr-response")]
-        [Consumes("application/vnd.classifier.classification+json;version=1")]
         public AcceptedResult PostDmrMessage([FromHeader] HeadersInput headers)
         {
             _chatService.AddMessageMetadata(headers);
