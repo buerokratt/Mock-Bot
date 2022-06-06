@@ -25,6 +25,6 @@ namespace MockBot.Api.Services.Dmr
         /// <summary>
         /// The payload (request body) of requests to or from Dmr
         /// </summary>
-        public DmrRequestPayload? Payload { get; set; }
+        public DmrRequestPayload Payload { get; set; }
     }
 }

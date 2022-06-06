@@ -14,7 +14,7 @@
                 new EventId(2, "DmrCallbackFailed"),
                 "Callback to DMR failed");
 
-        public static void DmrCallback(this ILogger logger, string? classification, string? message)
+        public static void DmrCallback(this ILogger logger, string classification, string message)
         {
             classification ??= string.Empty;
             message ??= string.Empty;

@@ -11,11 +11,11 @@ namespace MockBot.Api.Services.Dmr
         /// <summary>
         /// The classification 
         /// </summary>
-        public string? Classification { get; set; }
+        public string Classification { get; set; }
 
         /// <summary>
         /// A message being sent to or from the DMR
         /// </summary>
-        public string? Message { get; set; }
+        public string Message { get; set; }
     }
 }

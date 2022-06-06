@@ -15,7 +15,7 @@ namespace MockBot.Api.Services.Dmr
         /// <summary>
         /// The base URI for the DMR REST API
         /// </summary>
-        public Uri? DmrApiUri { get; set; }
+        public Uri DmrApiUri { get; set; }
 
         /// <summary>
         /// The name of the <see cref="HttpClient"/> for the <see cref="DmrService"/>

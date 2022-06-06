@@ -28,12 +28,12 @@ namespace MockBot.Api.Services
             return Chats.Values.ToList();
         }
 
-        public Chat? FindById(Guid chatId)
+        public Chat FindById(Guid chatId)
         {
             return Chats.TryGetValue(chatId, out var chat) ? chat : null;
         }
 
-        public Message? AddMessage(Guid chatId, string content)
+        public Message AddMessage(Guid chatId, string content)
         {
             var message = new Message(content);
             var chat = FindById(chatId);
@@ -65,7 +65,7 @@ namespace MockBot.Api.Services
             message.ModelType = modelTypeHeader;
         }
 
-        public void AddDmrRequest(Message? message)
+        public void AddDmrRequest(Message message)
         {
             if (message == null)
             {
