@@ -11,7 +11,6 @@ namespace MockBot.Api.Services.Dmr
     /// <summary>
     /// A service that handles calls to the DMR API
     /// </summary>
-    [ExcludeFromCodeCoverage] // Placeholder until we get the NuGet package
     public class DmrService : IDmrService
     {
         private readonly HttpClient _httpClient;

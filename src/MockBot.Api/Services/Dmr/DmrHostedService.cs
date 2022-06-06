@@ -5,7 +5,6 @@ namespace MockBot.Api.Services.Dmr
     /// <summary>
     /// A background hosted service that periodically triggers the DMR request processor
     /// </summary>
-    [ExcludeFromCodeCoverage] // Placeholder until we get the NuGet package
     public sealed class DmrHostedService : IHostedService, IDisposable
     {
         private readonly IDmrService dmrService;

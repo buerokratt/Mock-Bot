@@ -6,7 +6,6 @@ namespace MockBot.Api.Services.Dmr.Extensions
     /// <summary>
     /// Extension class to help add all services related to the DMR
     /// </summary>
-    [ExcludeFromCodeCoverage] // Placeholder until we get the NuGet package
     public static class ServiceCollectionExtensions
     {
         /// <summary>

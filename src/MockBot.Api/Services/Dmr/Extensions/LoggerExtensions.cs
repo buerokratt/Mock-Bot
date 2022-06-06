@@ -2,7 +2,6 @@
 
 namespace MockBot.Api.Services.Dmr.Extensions
 {
-    [ExcludeFromCodeCoverage] // Placeholder until we get the NuGet package
     public static class LoggerExtensions
     {
         private static readonly Action<ILogger, string, string, Exception> _dmrCallback =
