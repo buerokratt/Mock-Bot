@@ -75,7 +75,7 @@ namespace MockBot.Api.Controllers
                 { Constants.MessageIdHeaderKey, messageIdHeader },
                 { Constants.SendToHeaderKey, sentByHeader },
                 { Constants.MessageIdRefHeaderKey, messageIdRefHeader },
-                { Constants.ModelTypeHeaderKey, modelTypeHeader}
+                { Constants.ModelTypeHeaderKey, modelTypeHeader }
             };
 
             // Setup payload

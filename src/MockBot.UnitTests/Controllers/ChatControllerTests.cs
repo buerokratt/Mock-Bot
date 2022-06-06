@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Threading.Tasks;
+using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
@@ -72,20 +73,34 @@ namespace MockBot.UnitTests.Controllers
             Assert.Equal($"/chats/{resultChat.Id}", result.Location);
         }
 
-        // [Fact]
-        // public void ShouldAddMessageToChat()
-        // {
-        //     const string messageContent = "Some text";
-        //     var message = new Message(messageContent);
-        //     var chat = new Chat();
-        //     var currentDateTime = new DateTime();
-        //     _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, messageContent)).Returns(message);
-        //
-        //     var result = _sut.PostMessage(chat.Id, messageContent);
-        //
-        //     var resultMessage = Assert.IsType<Message>(result.Value);
-        //     Assert.NotEmpty(resultMessage.Id.ToString());
-        //     Assert.True(currentDateTime < resultMessage.CreatedAt);
-        // }
+        [Theory]
+        [InlineData("Some text")]
+        public void ShouldAddMessageToChat(string payload)
+        {
+            _sut.ControllerContext = new ControllerContext()
+            {
+                HttpContext = GetContext(payload)
+            };
+
+            var message = new Message(payload);
+            var chat = new Chat();
+            var currentDateTime = new DateTime();
+            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload)).Returns(message);
+
+            var result = _sut.PostMessage(chat.Id, payload);
+
+            var resultMessage = Assert.IsType<Message>(result.Value);
+            Assert.NotEmpty(resultMessage.Id.ToString());
+            Assert.True(currentDateTime < resultMessage.CreatedAt);
+        }
+
+        private static DefaultHttpContext GetContext(string payload)
+        {
+            var httpContext = new DefaultHttpContext();
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+            httpContext.Request.Body = stream;
+            httpContext.Request.ContentLength = stream.Length;
+            return httpContext;
+        }
     }
 }

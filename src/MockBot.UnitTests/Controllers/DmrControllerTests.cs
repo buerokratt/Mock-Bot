@@ -1,4 +1,7 @@
+using System.IO;
+using System.Text;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
@@ -18,27 +21,28 @@ namespace MockBot.UnitTests.Controllers
             _sut = new DmrController(_mockChatService.Object);
         }
 
-        // [Fact]
-        // public void ShouldReturnAcceptedAndAddMetadataToMessage()
-        // {
-        //     // var message = new Message("Big Data");
-        //     // var xSentBy = "sender";
-        //     // var xSendTo = "receiver";
-        //     // var xMessageId = "dmrMessage";
-        //     // var xModelType = "good";
-        //     // var xMessageIdRef = message.Id.ToString();
-        //
-        //     // var headers = new HeaderDictionary
-        //     // {
-        //     //     { Constants.MessageIdRefHeaderKey, xMessageIdRef},
-        //     //     { Constants.SendToHeaderKey, xSendTo },
-        //     //     { Constants.SentByHeaderKey, xSentBy },
-        //     //     { Constants.ModelTypeHeaderKey, xModelType }
-        //     // };
-        //
-        //     var result = _sut.PostDmrMessage();
-        //
-        //     Assert.Equal(202, result.StatusCode);
-        // }
+        [Theory]
+        [InlineData("Some text")]
+        public void ShouldReturnAcceptedAndAddMetadataToMessage(string payload)
+        {
+            _sut.ControllerContext = new ControllerContext()
+            {
+                HttpContext = GetContext(payload),
+            };
+
+            var result = _sut.PostDmrMessage();
+
+            Assert.Equal(202, result.StatusCode);
+        }
+
+        private static DefaultHttpContext GetContext(string payload)
+        {
+            var httpContext = new DefaultHttpContext();
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+            httpContext.Request.Headers[Constants.SendToHeaderKey] = "Classifier";
+            httpContext.Request.Body = stream;
+            httpContext.Request.ContentLength = stream.Length;
+            return httpContext;
+        }
     }
 }
