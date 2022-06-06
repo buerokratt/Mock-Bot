@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace MockBot.Api.Services.Dmr.Extensions
+﻿namespace MockBot.Api.Services.Dmr.Extensions
 {
     public static class LoggerExtensions
     {

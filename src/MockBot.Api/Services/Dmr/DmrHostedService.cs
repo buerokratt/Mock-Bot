@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-
-namespace MockBot.Api.Services.Dmr
+﻿namespace MockBot.Api.Services.Dmr
 {
     /// <summary>
     /// A background hosted service that periodically triggers the DMR request processor

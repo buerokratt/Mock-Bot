@@ -1,7 +1,6 @@
 ﻿using MockBot.Api.Models;
 using MockBot.Api.Services.Dmr.Extensions;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
