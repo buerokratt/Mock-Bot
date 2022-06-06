@@ -27,6 +27,13 @@ namespace MockBot.UnitTests.Services
         }
 
         [Fact]
+        public void DecodeBase64ReturnsArgumentNullException()
+        {
+            // Act & Assert
+            _ = Assert.Throws<ArgumentNullException>(() => sut.DecodeBase64(null));
+        }
+
+        [Fact]
         public void DecodeBase64ReturnsArgumentException()
         {
             // Act & Assert
@@ -41,6 +48,13 @@ namespace MockBot.UnitTests.Services
 
             // Assert
             Assert.Equal(base64Text, result);
+        }
+
+        [Fact]
+        public void EncodeBase64ReturnsArgumentNullException()
+        {
+            // Act & Assert
+            _ = Assert.Throws<ArgumentNullException>(() => sut.EncodeBase64(null));
         }
     }
 }

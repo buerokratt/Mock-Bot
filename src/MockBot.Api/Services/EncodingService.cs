@@ -5,7 +5,7 @@ namespace MockBot.Api.Services
 {
     public class EncodingService : IEncodingService
     {
-        public string DecodeBase64(string content)
+        public string DecodeBase64(string? content)
         {
             if (content == null)
             {
@@ -25,7 +25,7 @@ namespace MockBot.Api.Services
             }
         }
 
-        public string EncodeBase64(string content)
+        public string EncodeBase64(string? content)
         {
             if (content == null)
             {
