@@ -37,7 +37,7 @@ namespace MockBot.UnitTests.Services
             var chat = _sut.CreateChat();
             var result = _sut.FindById(chat.Id);
 
-            Assert.Equal(chat.Id, result!.Id);
+            Assert.Equal(chat.Id, result.Id);
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace MockBot.UnitTests.Services
             _ = _sut.AddMessage(chat.Id, messageContent);
 
             var result = _sut.FindById(chat.Id);
-            Assert.NotNull(result!.Messages);
+            _ = Assert.Single(result.Messages);
         }
 
         [Fact]
