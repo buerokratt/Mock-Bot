@@ -47,17 +47,22 @@ namespace MockBot.Api.Services
             return message;
         }
 
-        public void AddMessageMetadata(HeadersInput? headers)
+        public void AddMessageMetadata(IHeaderDictionary headers)
         {
-            if (headers?.XMessageIdRef == null)
+            if (headers == null)
             {
                 return;
             }
 
-            var message = DmrRequests[headers.XMessageIdRef];
-            message.SentBy = headers.XSentBy;
-            message.SendTo = headers.XSendTo;
-            message.ModelType = headers.XModelType;
+            _ = headers.TryGetValue(Constants.MessageIdRefHeaderKey, out var messageIdRefHeader);
+            _ = headers.TryGetValue(Constants.SentByHeaderKey, out var sentByHeader);
+            _ = headers.TryGetValue(Constants.SendToHeaderKey, out var sendToHeader);
+            _ = headers.TryGetValue(Constants.ModelTypeHeaderKey, out var modelTypeHeader);
+
+            var message = DmrRequests[messageIdRefHeader];
+            message.SentBy = sentByHeader;
+            message.SendTo = sendToHeader;
+            message.ModelType = modelTypeHeader;
         }
 
         public void AddDmrRequest(Message? message)
