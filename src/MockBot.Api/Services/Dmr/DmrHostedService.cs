@@ -15,9 +15,7 @@
             this.dmrService = dmrService;
             this.config = config;
             this.logger = logger;
-#pragma warning disable CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
             timer = new Timer(TimerCallback, this, Timeout.Infinite, Timeout.Infinite);
-#pragma warning restore CS8622 // Nullability of reference types in type of parameter doesn't match the target delegate (possibly because of nullability attributes).
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -53,9 +51,7 @@
 
             var self = state as DmrHostedService;
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
             self.StopTimer();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
             try
             {
