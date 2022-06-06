@@ -37,7 +37,8 @@ namespace MockBot.UnitTests.Services
         public void DecodeBase64ReturnsArgumentException()
         {
             // Act & Assert
-            _ = Assert.Throws<ArgumentException>(() => sut.DecodeBase64(invalidBase64String));
+            var ex = Assert.Throws<ArgumentException>(() => sut.DecodeBase64(invalidBase64String));
+            Assert.Equal("Argument is not valid Base64", ex.Message);
         }
 
         [Fact]
@@ -54,7 +55,8 @@ namespace MockBot.UnitTests.Services
         public void EncodeBase64ReturnsArgumentNullException()
         {
             // Act & Assert
-            _ = Assert.Throws<ArgumentNullException>(() => sut.EncodeBase64(null));
+            var ex = Assert.Throws<ArgumentNullException>(() => sut.EncodeBase64(null));
+            Assert.Equal("Value cannot be null. (Parameter 'content')", ex.Message);
         }
     }
 }
