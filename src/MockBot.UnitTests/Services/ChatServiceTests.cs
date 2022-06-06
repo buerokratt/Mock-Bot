@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MockBot.Api.Models;
 using MockBot.Api.Services;
+using System;
 using Xunit;
 
 namespace MockBot.UnitTests.Services
@@ -84,6 +85,31 @@ namespace MockBot.UnitTests.Services
             Assert.Equal(xSentBy, message.SentBy);
             Assert.Equal(xSendTo, message.SendTo);
             Assert.Equal(xModelType, message.ModelType);
+        }
+
+        [Fact]
+        public void AddMessageMetadataWithNullShouldThrowNullArgument()
+        {
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => _sut.AddMessageMetadata(null));
+            Assert.Equal("Value cannot be null. (Parameter 'headers')", ex.Message);
+        }
+
+
+        [Fact]
+        public void AddDmrRequestWithNullShouldThrowNullArgument()
+        {
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentNullException>(() => _sut.AddDmrRequest(null));
+            Assert.Equal("Value cannot be null. (Parameter 'message')", ex.Message);
+        }
+
+        [Fact]
+        public void AddMessageInvalidChatIdShouldThrowArgumentOutOfRangeException()
+        {
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentOutOfRangeException>(() => _sut.AddMessage(Guid.NewGuid(), "foo"));
+            Assert.Equal("Specified argument was out of the range of valid values. (Parameter 'chatId')", ex.Message);
         }
     }
 }

@@ -40,7 +40,7 @@ namespace MockBot.Api.Services
 
             if (chat == null)
             {
-                return null;
+                throw new ArgumentOutOfRangeException(nameof(chatId));
             }
 
             chat.Messages.Add(message);
@@ -51,8 +51,8 @@ namespace MockBot.Api.Services
         {
             if (headers == null)
             {
-                return;
-            }
+                throw new ArgumentNullException(nameof(headers));
+            };
 
             _ = headers.TryGetValue(Constants.MessageIdRefHeaderKey, out var messageIdRefHeader);
             _ = headers.TryGetValue(Constants.SentByHeaderKey, out var sentByHeader);
@@ -69,8 +69,8 @@ namespace MockBot.Api.Services
         {
             if (message == null)
             {
-                return;
-            }
+                throw new ArgumentNullException(nameof(message));
+            };
 
             DmrRequests.Add(message.Id.ToString(), message);
         }
