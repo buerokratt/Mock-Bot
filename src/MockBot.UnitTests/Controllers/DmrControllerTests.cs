@@ -11,11 +11,13 @@ namespace MockBot.UnitTests.Controllers
     {
         private readonly DmrController _sut;
         private readonly Mock<IChatService> _mockChatService;
+        private readonly Mock<IEncodingService> _mockEncoderService;
 
         public DmrControllerTests()
         {
             _mockChatService = new Mock<IChatService>();
-            _sut = new DmrController(_mockChatService.Object);
+            _mockEncoderService = new Mock<IEncodingService>();
+            _sut = new DmrController(_mockChatService.Object, _mockEncoderService.Object);
         }
 
         [Fact]

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers;
@@ -23,7 +24,7 @@ namespace MockBot.UnitTests.Controllers
         {
             _mockChatService = new Mock<IChatService>();
             _mockDmrService = new Mock<IDmrService>();
-            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object);
+            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object, new DmrServiceSettings());
         }
 
         [Fact]
@@ -74,7 +75,7 @@ namespace MockBot.UnitTests.Controllers
 
         [Theory]
         [InlineData("Some text")]
-        public void ShouldAddMessageToChat(string payload)
+        public async Task ShouldAddMessageToChatAsync(string payload)
         {
             _sut.ControllerContext = new ControllerContext()
             {
@@ -86,7 +87,7 @@ namespace MockBot.UnitTests.Controllers
             var currentDateTime = new DateTime();
             _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload)).Returns(message);
 
-            var result = _sut.PostMessage(chat.Id, payload);
+            var result = await _sut.PostMessageAsync(chat.Id).ConfigureAwait(false);
 
             var createdResult = Assert.IsType<CreatedResult>(result);
             var resultMessage = Assert.IsType<Message>(createdResult.Value);
