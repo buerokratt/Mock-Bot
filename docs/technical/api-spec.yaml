@@ -148,6 +148,13 @@ paths:
             type: string
             example: NLib
           description: Name of the participant that sent the message.
+        - name: X-Model-Type
+          in: header
+          required: true
+          schema:
+            type: string
+            example: application/vnd.classifier.classification+json;version=1
+          description: Payload type when decrypted.
         - name: X-Message-Id
           in: header
           required: true
