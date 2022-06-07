@@ -94,13 +94,14 @@ namespace MockBot.UnitTests.Services.Dmr
 
         private static DmrRequest GetDmrRequest(string message = "my test message", string classification = "border")
         {
-            var headers = new Dictionary<string, string>
+            var headers = new HeadersInput
             {
-                { Constants.SentByHeaderKey, "MockClassifier.UnitTests.Services.Dmr.DmrServiceTests" },
-                { Constants.MessageIdHeaderKey, "1f7b356d-a6f4-4aeb-85cd-9d570dbc7606" },
-                { Constants.SendToHeaderKey, "Classifier" },
-                { Constants.MessageIdRefHeaderKey, "5822c6ef-177d-4dd7-b4c5-0d9d8c8d2c35" },
-                { Constants.ModelTypeHeaderKey, "MyModelType" }
+                XSentBy = "MockClassifier.UnitTests.Services.Dmr.DmrServiceTests",
+                XSendTo = "Classifier",
+                XMessageId = "1f7b356d-a6f4-4aeb-85cd-9d570dbc7606",
+                XMessageIdRef = "5822c6ef-177d-4dd7-b4c5-0d9d8c8d2c35",
+                XModelType = "application/vnd.classifier.classification+json;version=1",
+                ContentType = "text/plain"
             };
 
             var request = new DmrRequest(headers)

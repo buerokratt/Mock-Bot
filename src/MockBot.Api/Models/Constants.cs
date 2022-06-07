@@ -11,5 +11,6 @@ namespace MockBot.Api.Models
         public const string SendToHeaderKey = "X-Sent-By";
         public const string SentByHeaderKey = "X-Send-To";
         public const string ModelTypeHeaderKey = "X-Model-Type";
+        public const string ContentTypeHeaderKey = "Content-Type";
     }
 }

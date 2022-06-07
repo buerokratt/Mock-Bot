@@ -19,6 +19,6 @@ namespace MockBot.Api.Interfaces
 
         public Message AddMessage(Guid chatId, string content);
 
-        public void AddMessageMetadata(IHeaderDictionary headers);
+        public void AddMessageMetadata(HeadersInput headers);
     }
 }
