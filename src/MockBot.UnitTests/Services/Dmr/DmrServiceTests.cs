@@ -5,7 +5,6 @@ using MockBot.UnitTests.Extensions;
 using Moq;
 using RichardSzalay.MockHttp;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;

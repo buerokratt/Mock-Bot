@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using MockBot.Api.Models;
+﻿using MockBot.Api.Models;
 using MockBot.Api.Services;
 using System;
 using Xunit;
