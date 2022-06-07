@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Interfaces;
-using MockBot.Api.Models;
 
 namespace MockBot.Api.Controllers
 {
@@ -17,9 +16,9 @@ namespace MockBot.Api.Controllers
 
         [HttpPost("dmr-response")]
         [Consumes("application/vnd.classifier.classification+json;version=1")]
-        public AcceptedResult PostDmrMessage([FromHeader] HeadersInput headers)
+        public AcceptedResult PostDmrMessage()
         {
-            _chatService.AddMessageMetadata(headers);
+            _chatService.AddMessageMetadata(Request.Headers);
             return Accepted();
         }
     }

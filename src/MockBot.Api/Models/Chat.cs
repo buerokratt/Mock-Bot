@@ -22,15 +22,15 @@ namespace MockBot.Api.Models
     {
         public Guid Id { get; } = Guid.NewGuid();
 
-        public string? SentBy { get; set; }
+        public string SentBy { get; set; }
 
-        public string? SendTo { get; set; }
+        public string SendTo { get; set; }
 
         public string Content { get; }
 
         public DateTime CreatedAt { get; } = DateTime.UtcNow;
 
-        public string? ModelType { get; set; }
+        public string ModelType { get; set; }
 
         public Message([Required] string content)
         {

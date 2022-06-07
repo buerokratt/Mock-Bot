@@ -1,3 +1,7 @@
+using System.IO;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
@@ -17,26 +21,28 @@ namespace MockBot.UnitTests.Controllers
             _sut = new DmrController(_mockChatService.Object);
         }
 
-        [Fact]
-        public void ShouldReturnAcceptedAndAddMetadataToMessage()
+        [Theory]
+        [InlineData("Some text")]
+        public void ShouldReturnAcceptedAndAddMetadataToMessage(string payload)
         {
-            var message = new Message("Big Data");
-            var xSentBy = "sender";
-            var xSendTo = "receiver";
-            var xMessageId = "dmrMessage";
-            var xModelType = "good";
-            var xMessageIdRef = message.Id.ToString();
-
-            var result = _sut.PostDmrMessage(new HeadersInput
+            _sut.ControllerContext = new ControllerContext()
             {
-                XMessageId = xMessageId,
-                XMessageIdRef = xMessageIdRef,
-                XSendTo = xSendTo,
-                XSentBy = xSentBy,
-                XModelType = xModelType
-            });
+                HttpContext = GetContext(payload),
+            };
+
+            var result = _sut.PostDmrMessage();
 
             Assert.Equal(202, result.StatusCode);
+        }
+
+        private static DefaultHttpContext GetContext(string payload)
+        {
+            var httpContext = new DefaultHttpContext();
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+            httpContext.Request.Headers[Constants.SendToHeaderKey] = "Classifier";
+            httpContext.Request.Body = stream;
+            httpContext.Request.ContentLength = stream.Length;
+            return httpContext;
         }
     }
 }

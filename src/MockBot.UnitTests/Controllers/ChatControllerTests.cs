@@ -1,9 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
+using MockBot.Api.Services.Dmr;
 using Moq;
 using Xunit;
 
@@ -13,11 +17,13 @@ namespace MockBot.UnitTests.Controllers
     {
         private readonly ChatController _sut;
         private readonly Mock<IChatService> _mockChatService;
+        private readonly Mock<IDmrService> _mockDmrService;
 
         public ChatControllerTests()
         {
             _mockChatService = new Mock<IChatService>();
-            _sut = new ChatController(_mockChatService.Object);
+            _mockDmrService = new Mock<IDmrService>();
+            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object);
         }
 
         [Fact]
@@ -66,20 +72,34 @@ namespace MockBot.UnitTests.Controllers
             Assert.Equal($"/chats/{resultChat.Id}", result.Location);
         }
 
-        [Fact]
-        public void ShouldAddMessageToChat()
+        [Theory]
+        [InlineData("Some text")]
+        public void ShouldAddMessageToChat(string payload)
         {
-            const string messageContent = "Some text";
-            var message = new Message(messageContent);
+            _sut.ControllerContext = new ControllerContext()
+            {
+                HttpContext = GetContext(payload)
+            };
+
+            var message = new Message(payload);
             var chat = new Chat();
             var currentDateTime = new DateTime();
-            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, messageContent)).Returns(message);
+            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload)).Returns(message);
 
-            var result = _sut.PostMessage(chat.Id, messageContent);
+            var result = _sut.PostMessage(chat.Id, payload);
 
             var resultMessage = Assert.IsType<Message>(result.Value);
             Assert.NotEmpty(resultMessage.Id.ToString());
             Assert.True(currentDateTime < resultMessage.CreatedAt);
+        }
+
+        private static DefaultHttpContext GetContext(string payload)
+        {
+            var httpContext = new DefaultHttpContext();
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
+            httpContext.Request.Body = stream;
+            httpContext.Request.ContentLength = stream.Length;
+            return httpContext;
         }
     }
 }
