@@ -16,6 +16,8 @@ namespace MockBot.Api
             var configuration = builder.Configuration;
             var services = builder.Services;
 
+            _ = configuration.AddEnvironmentVariables();
+
             // Add services to the container.
             var dmrSettings = configuration.GetSection("DmrServiceSettings").Get<DmrServiceSettings>();
             services.AddDmrService(dmrSettings);
@@ -25,7 +27,7 @@ namespace MockBot.Api
             _ = services.AddEndpointsApiExplorer();
             _ = services.AddSwaggerGen();
             _ = services.AddSingleton<IChatService, ChatService>();
-
+            _ = services.AddSingleton<IEncodingService, EncodingService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

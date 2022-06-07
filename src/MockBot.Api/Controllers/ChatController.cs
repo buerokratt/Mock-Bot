@@ -2,6 +2,7 @@
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 using MockBot.Api.Services.Dmr;
+using System.Text;
 
 namespace MockBot.Api.Controllers
 {
@@ -11,11 +12,13 @@ namespace MockBot.Api.Controllers
     {
         private readonly IChatService _chatService;
         private readonly IDmrService _dmrService;
+        private readonly DmrServiceSettings _settings;
 
-        public ChatController(IChatService chatService, IDmrService dmrService)
+        public ChatController(IChatService chatService, IDmrService dmrService, DmrServiceSettings settings)
         {
             _chatService = chatService;
             _dmrService = dmrService;
+            _settings = settings;
         }
 
         [HttpGet]
@@ -47,16 +50,22 @@ namespace MockBot.Api.Controllers
         }
 
         [HttpPost("{chatId}/messages")]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Message))]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult PostMessage(Guid chatId, [FromBody] string content)
+        public async Task<ActionResult> PostMessageAsync(Guid chatId)
         {
             try
             {
+                string content;
+                using (StreamReader reader = new(Request.Body, Encoding.UTF8))
+                {
+                    content = await reader.ReadToEndAsync().ConfigureAwait(false);
+                }
+
                 var message = _chatService.AddMessage(chatId, content);
                 _chatService.AddDmrRequest(message);
 
-                _dmrService.RecordRequest(GetDmrRequest(message, ""));
+                _dmrService.RecordRequest(GetDmrRequest(message, string.Empty, _settings.BotId));
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
             catch (ArgumentOutOfRangeException)
@@ -71,14 +80,15 @@ namespace MockBot.Api.Controllers
         /// <param name="message">The message to go into the .Payload.Message property</param>
         /// <param name="classification">No classification before getting send to DMR</param>
         /// <returns>A DmrRequest object</returns>
-        private static DmrRequest GetDmrRequest(Message message, string classification)
+        private static DmrRequest GetDmrRequest(Message message, string classification, string botId)
         {
             // Setup headers
             var dmrHeaders = new HeadersInput
             {
-                XSentBy = "MockBot",
+                XSentBy = botId,
                 XSendTo = "Classifier",
                 XMessageId = message.Id.ToString(),
+                XMessageIdRef = message.Id.ToString(),
                 XModelType = "application/vnd.classifier.classification+json;version=1",
                 ContentType = "text/plain"
             };

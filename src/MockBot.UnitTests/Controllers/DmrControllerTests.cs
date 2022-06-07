@@ -36,7 +36,7 @@ namespace MockBot.UnitTests.Controllers
                 XModelType = xModelType
             };
 
-            var result = _sut.PostDmrMessage(headers);
+            var result = _sut.PostDmrMessageAsync(headers);
 
             _ = Assert.IsType<AcceptedResult>(result);
         }
