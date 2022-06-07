@@ -48,13 +48,21 @@ namespace MockBot.Api.Controllers
 
         [HttpPost("{chatId}/messages")]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Message))]
-        public CreatedResult PostMessage(Guid chatId, [FromBody] string content)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult PostMessage(Guid chatId, [FromBody] string content)
         {
-            var message = _chatService.AddMessage(chatId, content);
-            _chatService.AddDmrRequest(message);
+            try
+            {
+                var message = _chatService.AddMessage(chatId, content);
+                _chatService.AddDmrRequest(message);
 
-            _dmrService.RecordRequest(GetDmrRequest(message, ""));
-            return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
+                _dmrService.RecordRequest(GetDmrRequest(message, ""));
+                return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return NotFound(chatId);
+            }
         }
 
         /// <summary>
