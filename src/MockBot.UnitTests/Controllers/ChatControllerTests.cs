@@ -24,7 +24,7 @@ namespace MockBot.UnitTests.Controllers
         {
             _mockChatService = new Mock<IChatService>();
             _mockDmrService = new Mock<IDmrService>();
-            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object, new DmrServiceSettings());
+            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object, new DmrServiceSettings() { BotId = "bot1" });
         }
 
         [Fact]
@@ -91,6 +91,7 @@ namespace MockBot.UnitTests.Controllers
 
             var createdResult = Assert.IsType<CreatedResult>(result);
             var resultMessage = Assert.IsType<Message>(createdResult.Value);
+            Assert.Equal($"/chats/{chat.Id}/messages", createdResult.Location);
             Assert.NotEmpty(resultMessage.Id.ToString());
             Assert.True(currentDateTime < resultMessage.CreatedAt);
             _mockChatService.Verify(mock => mock.AddDmrRequest(message));
