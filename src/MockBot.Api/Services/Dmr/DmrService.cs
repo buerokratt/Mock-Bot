@@ -84,12 +84,11 @@ namespace MockBot.Api.Services.Dmr
                 Content = content,
             };
 
-            requestMessage.Headers.Add(Constants.MessageIdHeaderKey, request.Headers[Constants.MessageIdHeaderKey]);
-            requestMessage.Headers.Add(Constants.MessageIdRefHeaderKey,
-                request.Headers[Constants.MessageIdRefHeaderKey]);
-            requestMessage.Headers.Add(Constants.SendToHeaderKey, request.Headers[Constants.SendToHeaderKey]);
-            requestMessage.Headers.Add(Constants.SentByHeaderKey, request.Headers[Constants.SentByHeaderKey]);
-            requestMessage.Headers.Add(Constants.ModelTypeHeaderKey, request.Headers[Constants.ModelTypeHeaderKey]);
+            requestMessage.Headers.Add(Constants.MessageIdHeaderKey, request.Headers.XMessageId);
+            requestMessage.Headers.Add(Constants.MessageIdRefHeaderKey, request.Headers.XMessageIdRef);
+            requestMessage.Headers.Add(Constants.SendToHeaderKey, request.Headers.XSendTo);
+            requestMessage.Headers.Add(Constants.SentByHeaderKey, request.Headers.XSentBy);
+            requestMessage.Headers.Add(Constants.ModelTypeHeaderKey, request.Headers.XModelType);
 
             return requestMessage;
         }

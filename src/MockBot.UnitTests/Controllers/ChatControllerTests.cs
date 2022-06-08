@@ -88,9 +88,29 @@ namespace MockBot.UnitTests.Controllers
 
             var result = _sut.PostMessage(chat.Id, payload);
 
-            var resultMessage = Assert.IsType<Message>(result.Value);
+            var createdResult = Assert.IsType<CreatedResult>(result);
+            var resultMessage = Assert.IsType<Message>(createdResult.Value);
             Assert.NotEmpty(resultMessage.Id.ToString());
             Assert.True(currentDateTime < resultMessage.CreatedAt);
+            _mockChatService.Verify(mock => mock.AddDmrRequest(message));
+            _mockDmrService.Verify(mock => mock.RecordRequest(It.IsAny<DmrRequest>()));
+        }
+
+        [Theory]
+        [InlineData("Some text")]
+        public void ShouldFailToAddMessageToChatWhenNoChatWithGivenId(string payload)
+        {
+            _sut.ControllerContext = new ControllerContext()
+            {
+                HttpContext = GetContext(payload)
+            };
+            var chat = new Chat();
+            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload)).Throws(new ArgumentOutOfRangeException(chat.Id.ToString()));
+
+
+            var result = _sut.PostMessage(chat.Id, payload);
+
+            _ = Assert.IsType<NotFoundObjectResult>(result);
         }
 
         private static DefaultHttpContext GetContext(string payload)

@@ -19,6 +19,7 @@ namespace MockBot.Api.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public OkObjectResult FindAll()
         {
             var chats = _chatService.FindAll();
@@ -46,12 +47,22 @@ namespace MockBot.Api.Controllers
         }
 
         [HttpPost("{chatId}/messages")]
-        public CreatedResult PostMessage(Guid chatId, [FromBody] string content)
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Message))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult PostMessage(Guid chatId, [FromBody] string content)
         {
-            var message = _chatService.AddMessage(chatId, content);
+            try
+            {
+                var message = _chatService.AddMessage(chatId, content);
+                _chatService.AddDmrRequest(message);
 
-            _dmrService.RecordRequest(GetDmrRequest(content, "", Request.Headers));
-            return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
+                _dmrService.RecordRequest(GetDmrRequest(message, ""));
+                return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return NotFound(chatId);
+            }
         }
 
         /// <summary>
@@ -59,29 +70,23 @@ namespace MockBot.Api.Controllers
         /// </summary>
         /// <param name="message">The message to go into the .Payload.Message property</param>
         /// <param name="classification">No classification before getting send to DMR</param>
-        /// <param name="headers">The header collection from the original Request. Used to create the .Header object</param>
         /// <returns>A DmrRequest object</returns>
-        private static DmrRequest GetDmrRequest(string message, string classification, IHeaderDictionary headers)
+        private static DmrRequest GetDmrRequest(Message message, string classification)
         {
             // Setup headers
-            _ = headers.TryGetValue(Constants.SentByHeaderKey, out var sentByHeader);
-            _ = headers.TryGetValue(Constants.MessageIdHeaderKey, out var messageIdHeader);
-            _ = headers.TryGetValue(Constants.SendToHeaderKey, out var sendToHeader);
-            _ = headers.TryGetValue(Constants.MessageIdRefHeaderKey, out var messageIdRefHeader);
-            _ = headers.TryGetValue(Constants.ModelTypeHeaderKey, out var modelTypeHeader);
-            var dmrHeaders = new Dictionary<string, string>
+            var dmrHeaders = new HeadersInput
             {
-                { Constants.SentByHeaderKey, sendToHeader },
-                { Constants.MessageIdHeaderKey, messageIdHeader },
-                { Constants.SendToHeaderKey, sentByHeader },
-                { Constants.MessageIdRefHeaderKey, messageIdRefHeader },
-                { Constants.ModelTypeHeaderKey, modelTypeHeader }
+                XSentBy = "MockBot",
+                XSendTo = "Classifier",
+                XMessageId = message.Id.ToString(),
+                XModelType = "application/vnd.classifier.classification+json;version=1",
+                ContentType = "text/plain"
             };
 
             // Setup payload
             var dmrPayload = new DmrRequestPayload()
             {
-                Message = message,
+                Message = message.Content,
                 Classification = classification
             };
 

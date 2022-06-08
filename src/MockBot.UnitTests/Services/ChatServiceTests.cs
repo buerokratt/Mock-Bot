@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using MockBot.Api.Models;
+﻿using MockBot.Api.Models;
 using MockBot.Api.Services;
 using System;
 using Xunit;
@@ -69,15 +68,17 @@ namespace MockBot.UnitTests.Services
             var message = new Message("Hello");
             var xSentBy = "sender";
             var xSendTo = "receiver";
+            var xMessageId = "dmrMessage";
+            var xMessageIdRef = message.Id.ToString();
             var xModelType = "good";
             _sut.AddDmrRequest(message);
-
-            var headers = new HeaderDictionary
+            var headers = new HeadersInput
             {
-                { Constants.MessageIdRefHeaderKey, message.Id.ToString() },
-                { Constants.SendToHeaderKey, xSendTo },
-                { Constants.SentByHeaderKey, xSentBy },
-                { Constants.ModelTypeHeaderKey, xModelType }
+                XSentBy = xSentBy,
+                XSendTo = xSendTo,
+                XMessageId = xMessageId,
+                XMessageIdRef = xMessageIdRef,
+                XModelType = xModelType
             };
 
             _sut.AddMessageMetadata(headers);
