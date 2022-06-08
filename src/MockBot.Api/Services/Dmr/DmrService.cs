@@ -69,8 +69,6 @@ namespace MockBot.Api.Services.Dmr
                 throw new ArgumentNullException(nameof(content));
             }
 
-            ;
-
             byte[] bytes = Encoding.UTF8.GetBytes(content);
             var base64 = Convert.ToBase64String(bytes);
             return base64;

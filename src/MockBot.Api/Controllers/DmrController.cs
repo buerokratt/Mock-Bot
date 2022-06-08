@@ -35,15 +35,18 @@ namespace MockBot.Api.Controllers
                 }
 
                 var decodedPayload = _encoder.DecodeBase64(encodedPayload);
+
+                // Just log telemetry for the DMR Callback at the moment...
                 _logger.DmrCallbackReceived(headers?.XSentBy ?? "Unknown", encodedPayload, decodedPayload);
 
                 _chatService.AddMessageMetadata(headers);
-                return Accepted();
             }
             catch (ArgumentException)
             {
                 return NotFound(headers?.XMessageIdRef ?? "Unknown");
             }
+
+            return Accepted();
         }
     }
 }
