@@ -96,6 +96,13 @@ namespace MockBot.UnitTests.Services
             Assert.Equal("Value cannot be null. (Parameter 'headers')", ex.Message);
         }
 
+        [Fact]
+        public void AddMessageMetadataMissingMessageRefShouldThrowArgument()
+        {
+            // Act & Assert
+            var ex = Assert.Throws<ArgumentException>(() => _sut.AddMessageMetadata(new HeadersInput() { XMessageIdRef = "Doesn'tExist" }));
+            Assert.Equal("Doesn'tExist", ex.Message);
+        }
 
         [Fact]
         public void AddDmrRequestWithNullShouldThrowNullArgument()

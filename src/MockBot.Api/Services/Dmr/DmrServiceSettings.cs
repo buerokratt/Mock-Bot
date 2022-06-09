@@ -13,11 +13,6 @@ namespace MockBot.Api.Services.Dmr
         private const int DefaultDmrRequestProcessIntervalMs = 5_000;
 
         /// <summary>
-        /// The Id of this running instance of the MockBot.
-        /// </summary>
-        public string BotId { get; set; }
-
-        /// <summary>
         /// The base URI for the DMR REST API
         /// </summary>
         public Uri DmrApiUri { get; set; }

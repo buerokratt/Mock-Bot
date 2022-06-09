@@ -21,7 +21,7 @@ namespace MockBot.Api.Controllers
             _logger = logger;
         }
 
-        [HttpPost("dmr-response")]
+        [HttpPost("messages")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> PostDmrMessageAsync([FromHeader] HeadersInput headers)

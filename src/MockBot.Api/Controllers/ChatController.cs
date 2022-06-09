@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 using MockBot.Api.Services.Dmr;
@@ -12,9 +13,9 @@ namespace MockBot.Api.Controllers
     {
         private readonly IChatService _chatService;
         private readonly IDmrService _dmrService;
-        private readonly DmrServiceSettings _settings;
+        private readonly BotSettings _settings;
 
-        public ChatController(IChatService chatService, IDmrService dmrService, DmrServiceSettings settings)
+        public ChatController(IChatService chatService, IDmrService dmrService, BotSettings settings)
         {
             _chatService = chatService;
             _dmrService = dmrService;
@@ -65,7 +66,7 @@ namespace MockBot.Api.Controllers
                 var message = _chatService.AddMessage(chatId, content);
                 _chatService.AddDmrRequest(message);
 
-                _dmrService.RecordRequest(GetDmrRequest(message, string.Empty, _settings.BotId));
+                _dmrService.RecordRequest(GetDmrRequest(message, string.Empty, _settings.Id));
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
             catch (ArgumentOutOfRangeException)
@@ -88,7 +89,6 @@ namespace MockBot.Api.Controllers
                 XSentBy = botId,
                 XSendTo = "Classifier",
                 XMessageId = message.Id.ToString(),
-                XMessageIdRef = message.Id.ToString(),
                 XModelType = "application/vnd.classifier.classification+json;version=1",
                 ContentType = "text/plain"
             };

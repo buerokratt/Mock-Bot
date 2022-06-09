@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MockBot.Api.Configuration;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
@@ -24,7 +25,7 @@ namespace MockBot.UnitTests.Controllers
         {
             _mockChatService = new Mock<IChatService>();
             _mockDmrService = new Mock<IDmrService>();
-            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object, new DmrServiceSettings() { BotId = "bot1" });
+            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object, new BotSettings() { Id = "bot1" });
         }
 
         [Fact]
