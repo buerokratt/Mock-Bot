@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MockBot.Api.Configuration;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
@@ -23,7 +25,7 @@ namespace MockBot.UnitTests.Controllers
         {
             _mockChatService = new Mock<IChatService>();
             _mockDmrService = new Mock<IDmrService>();
-            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object);
+            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object, new BotSettings() { Id = "bot1" });
         }
 
         [Fact]
@@ -74,7 +76,7 @@ namespace MockBot.UnitTests.Controllers
 
         [Theory]
         [InlineData("Some text")]
-        public void ShouldAddMessageToChat(string payload)
+        public async Task ShouldAddMessageToChatAsync(string payload)
         {
             _sut.ControllerContext = new ControllerContext()
             {
@@ -86,10 +88,11 @@ namespace MockBot.UnitTests.Controllers
             var currentDateTime = new DateTime();
             _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload)).Returns(message);
 
-            var result = _sut.PostMessage(chat.Id, payload);
+            var result = await _sut.PostMessageAsync(chat.Id).ConfigureAwait(false);
 
             var createdResult = Assert.IsType<CreatedResult>(result);
             var resultMessage = Assert.IsType<Message>(createdResult.Value);
+            Assert.Equal($"/chats/{chat.Id}/messages", createdResult.Location);
             Assert.NotEmpty(resultMessage.Id.ToString());
             Assert.True(currentDateTime < resultMessage.CreatedAt);
             _mockChatService.Verify(mock => mock.AddDmrRequest(message));
@@ -98,7 +101,7 @@ namespace MockBot.UnitTests.Controllers
 
         [Theory]
         [InlineData("Some text")]
-        public void ShouldFailToAddMessageToChatWhenNoChatWithGivenId(string payload)
+        public async Task ShouldFailToAddMessageToChatWhenNoChatWithGivenIdAsync(string payload)
         {
             _sut.ControllerContext = new ControllerContext()
             {
@@ -108,7 +111,7 @@ namespace MockBot.UnitTests.Controllers
             _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload)).Throws(new ArgumentOutOfRangeException(chat.Id.ToString()));
 
 
-            var result = _sut.PostMessage(chat.Id, payload);
+            var result = await _sut.PostMessageAsync(chat.Id).ConfigureAwait(false);
 
             _ = Assert.IsType<NotFoundObjectResult>(result);
         }

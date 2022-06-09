@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Services;
 using MockBot.Api.Services.Dmr;
@@ -16,16 +18,21 @@ namespace MockBot.Api
             var configuration = builder.Configuration;
             var services = builder.Services;
 
+            _ = configuration.AddEnvironmentVariables();
+
             // Add services to the container.
             var dmrSettings = configuration.GetSection("DmrServiceSettings").Get<DmrServiceSettings>();
             services.AddDmrService(dmrSettings);
+
+            var botSettings = configuration.GetSection("BotSettings").Get<BotSettings>();
+            services.TryAddSingleton(botSettings);
 
             _ = services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             _ = services.AddEndpointsApiExplorer();
             _ = services.AddSwaggerGen();
             _ = services.AddSingleton<IChatService, ChatService>();
-
+            _ = services.AddSingleton<IEncodingService, EncodingService>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

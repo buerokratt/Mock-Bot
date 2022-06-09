@@ -8,8 +8,8 @@ namespace MockBot.Api.Models
     {
         public const string MessageIdHeaderKey = "X-Message-Id";
         public const string MessageIdRefHeaderKey = "X-Message-Id-Ref";
-        public const string SendToHeaderKey = "X-Sent-By";
-        public const string SentByHeaderKey = "X-Send-To";
+        public const string SendToHeaderKey = "X-Send-To";
+        public const string SentByHeaderKey = "X-Sent-By";
         public const string ModelTypeHeaderKey = "X-Model-Type";
         public const string ContentTypeHeaderKey = "Content-Type";
     }

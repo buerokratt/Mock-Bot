@@ -18,7 +18,7 @@
         {
             classification ??= string.Empty;
             message ??= string.Empty;
-            _dmrCallback(logger, classification, message, new ArgumentException(message));
+            _dmrCallback(logger, classification, message, null);
         }
 
         public static void DmrCallbackFailed(this ILogger logger, Exception exception)

@@ -44,7 +44,7 @@ namespace MockBot.Api.Services.Dmr
                     var jsonPayload = JsonSerializer.Serialize(request.Payload);
                     var jsonPayloadBase64 = EncodeBase64(jsonPayload);
                     using var content = new StringContent(jsonPayloadBase64, Encoding.UTF8,
-                        MediaTypeNames.Application.Json);
+                        MediaTypeNames.Text.Plain);
 
                     // Setup message
                     using var requestMessage = CreateRequestMessage(request, content);
@@ -53,7 +53,7 @@ namespace MockBot.Api.Services.Dmr
                     var response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
                     _ = response.EnsureSuccessStatusCode();
 
-                    _logger.DmrCallback(request.Payload!.Classification, request.Payload.Message);
+                    _logger.DmrCallback(request.Payload?.Classification ?? string.Empty, request.Payload.Message);
                 }
                 catch (HttpRequestException exception)
                 {
@@ -68,8 +68,6 @@ namespace MockBot.Api.Services.Dmr
             {
                 throw new ArgumentNullException(nameof(content));
             }
-
-            ;
 
             byte[] bytes = Encoding.UTF8.GetBytes(content);
             var base64 = Convert.ToBase64String(bytes);
