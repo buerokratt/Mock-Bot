@@ -2,8 +2,8 @@
 using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
-using MockBot.Api.Services.Dmr;
 using RequestProcessor.AsyncProcessor;
+using RequestProcessor.Dmr;
 using RequestProcessor.Models;
 using System.Text;
 
@@ -36,7 +36,7 @@ namespace MockBot.Api.Controllers
         [HttpGet("{chatId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Models.Chat> Get(Guid chatId)
+        public ActionResult<Chat> Get(Guid chatId)
         {
             var chat = _chatService.FindById(chatId);
 
@@ -44,7 +44,7 @@ namespace MockBot.Api.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Models.Chat))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Chat))]
         public CreatedResult Post()
         {
             var chat = _chatService.CreateChat();

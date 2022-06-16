@@ -1,4 +1,4 @@
-﻿using MockBot.Api.Services.Dmr;
+﻿using RequestProcessor.Dmr;
 using RequestProcessor.Services.Encoder;
 using RichardSzalay.MockHttp;
 using System.Net;
