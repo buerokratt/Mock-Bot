@@ -1,6 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using MockBot.Api.Models;
-using RequestProcessor.Models;
+﻿using RequestProcessor.Models;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MockBot.Api.Services.Dmr
 {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection.Extensions;
 using RequestProcessor.AsyncProcessor;
-using RequestProcessor.Models;
 
 namespace MockBot.Api.Services.Dmr.Extensions
 {
