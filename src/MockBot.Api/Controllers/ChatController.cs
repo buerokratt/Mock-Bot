@@ -90,7 +90,7 @@ namespace MockBot.Api.Controllers
             {
                 XSentBy = botId,
                 XSendTo = "Classifier",
-                XMessageId = new Guid().ToString(),
+                XMessageId = message.Id.ToString(),
                 XModelType = "application/vnd.classifier.classification+json;version=1",
                 ContentType = "text/plain"
             };
