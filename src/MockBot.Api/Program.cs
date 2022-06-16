@@ -1,12 +1,11 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Services;
-using MockBot.Api.Services.Dmr;
 using MockBot.Api.Services.Dmr.Extensions;
 using RequestProcessor.Dmr;
 using RequestProcessor.Services.Encoder;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MockBot.Api
 {

@@ -10,11 +10,11 @@ namespace MockBot.Api.Interfaces
     /// </summary>
     public interface IChatService
     {
-        public Models.Chat CreateChat();
+        public Chat CreateChat();
 
-        public IEnumerable<Models.Chat> FindAll();
+        public IEnumerable<Chat> FindAll();
 
-        public Models.Chat FindById(Guid chatId);
+        public Chat FindById(Guid chatId);
 
         public ChatMessage AddMessage(Guid chatId, string content);
 
