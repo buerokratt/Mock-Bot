@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
-using MockBot.Api.Models;
 using Moq;
 using RequestProcessor.Models;
 using RequestProcessor.Services.Encoder;

@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Configuration;
@@ -12,7 +7,11 @@ using MockBot.Api.Models;
 using MockBot.Api.Services.Dmr;
 using Moq;
 using RequestProcessor.AsyncProcessor;
-using RequestProcessor.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 using Chat = MockBot.Api.Models.Chat;
 
