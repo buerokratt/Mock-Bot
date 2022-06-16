@@ -1,6 +1,6 @@
-﻿using MockBot.Api.Models;
-using MockBot.Api.Services.Dmr.Extensions;
-using System.Collections.Concurrent;
+﻿using MockBot.Api.Services.Dmr.Extensions;
+using RequestProcessor.AsyncProcessor;
+using RequestProcessor.Models;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
@@ -10,55 +10,38 @@ namespace MockBot.Api.Services.Dmr
     /// <summary>
     /// A service that handles calls to the DMR API
     /// </summary>
-    public class DmrService : IDmrService
+    public class DmrService : AsyncProcessorService<DmrRequest, DmrServiceSettings>
     {
-        private readonly HttpClient _httpClient;
-        private readonly ILogger<DmrService> _logger;
-
-        private readonly ConcurrentQueue<DmrRequest> requests;
-
-        public DmrService(IHttpClientFactory httpClientFactory, DmrServiceSettings config, ILogger<DmrService> logger)
+        public DmrService(
+            IHttpClientFactory httpClientFactory,
+            DmrServiceSettings config,
+            ILogger<DmrService> logger) :
+                base(httpClientFactory, config, logger)
         {
-            _ = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
-            _ = config ?? throw new ArgumentNullException(nameof(config));
-
-            _httpClient = httpClientFactory.CreateClient(config.ClientName);
-            _httpClient.BaseAddress = config.DmrApiUri;
-            _logger = logger;
-
-            requests = new ConcurrentQueue<DmrRequest>();
         }
 
-        public void RecordRequest(DmrRequest request)
+        public override async Task ProcessRequestAsync(DmrRequest payload)
         {
-            requests.Enqueue(request);
-        }
-
-        public async Task ProcessRequestsAsync()
-        {
-            while (requests.TryDequeue(out var request))
+            if (payload == null || payload.Headers == null || payload.Payload == null)
             {
-                try
-                {
-                    // Setup content
-                    var jsonPayload = JsonSerializer.Serialize(request.Payload);
-                    var jsonPayloadBase64 = EncodeBase64(jsonPayload);
-                    using var content = new StringContent(jsonPayloadBase64, Encoding.UTF8,
-                        MediaTypeNames.Text.Plain);
+                throw new ArgumentNullException(nameof(payload));
+            }
 
-                    // Setup message
-                    using var requestMessage = CreateRequestMessage(request, content);
+            try
+            {
+                // Setup message
+                using var requestMessage = CreateRequestMessage(payload);
 
-                    // Send request
-                    var response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
-                    _ = response.EnsureSuccessStatusCode();
+                // Send request
+                var response = await HttpClient.SendAsync(requestMessage).ConfigureAwait(false);
+                _ = response.EnsureSuccessStatusCode();
 
-                    _logger.DmrCallback(request.Payload?.Classification ?? string.Empty, request.Payload.Message);
-                }
-                catch (HttpRequestException exception)
-                {
-                    _logger.DmrCallbackFailed(exception);
-                }
+                Logger.DmrCallback(payload.Payload?.Classification ?? string.Empty, payload.Payload.Message);
+            }
+            catch (HttpRequestException exception)
+            {
+                Console.WriteLine(exception.ToString());
+                Logger.DmrCallbackFailed(exception);
             }
         }
 
@@ -74,19 +57,25 @@ namespace MockBot.Api.Services.Dmr
             return base64;
         }
 
-        private static HttpRequestMessage CreateRequestMessage(DmrRequest request, StringContent content)
+        private static HttpRequestMessage CreateRequestMessage(DmrRequest request)
         {
+            var jsonPayload = JsonSerializer.Serialize(request.Payload);
+            var jsonPayloadBase64 = EncodeBase64(jsonPayload);
+            var content = new StringContent(
+                jsonPayloadBase64,
+                Encoding.UTF8,
+                MediaTypeNames.Text.Plain);
+
             var requestMessage = new HttpRequestMessage()
             {
                 Method = HttpMethod.Post,
                 Content = content,
             };
 
-            requestMessage.Headers.Add(Constants.MessageIdHeaderKey, request.Headers.XMessageId);
-            requestMessage.Headers.Add(Constants.MessageIdRefHeaderKey, request.Headers.XMessageIdRef);
-            requestMessage.Headers.Add(Constants.SendToHeaderKey, request.Headers.XSendTo);
-            requestMessage.Headers.Add(Constants.SentByHeaderKey, request.Headers.XSentBy);
-            requestMessage.Headers.Add(Constants.ModelTypeHeaderKey, request.Headers.XModelType);
+            requestMessage.Headers.Add(Constants.XMessageIdHeaderName, request.Headers.XMessageId);
+            requestMessage.Headers.Add(Constants.XSendToHeaderName, request.Headers.XSendTo);
+            requestMessage.Headers.Add(Constants.XSentByHeaderName, request.Headers.XSentBy);
+            requestMessage.Headers.Add(Constants.XModelTypeHeaderName, request.Headers.XModelType);
 
             return requestMessage;
         }

@@ -5,6 +5,7 @@ using MockBot.Api.Interfaces;
 using MockBot.Api.Services;
 using MockBot.Api.Services.Dmr;
 using MockBot.Api.Services.Dmr.Extensions;
+using RequestProcessor.Services.Encoder;
 
 namespace MockBot.Api
 {

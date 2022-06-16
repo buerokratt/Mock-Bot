@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers.Extensions;
 using MockBot.Api.Interfaces;
-using MockBot.Api.Models;
+using RequestProcessor.Models;
+using RequestProcessor.Services.Encoder;
 using System.Text;
 
 namespace MockBot.Api.Controllers

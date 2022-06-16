@@ -1,18 +1,20 @@
 ﻿using System.Collections.Concurrent;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
+using RequestProcessor.Models;
+using Chat = MockBot.Api.Models.Chat;
 
 namespace MockBot.Api.Services
 {
     public class ChatService : IChatService
     {
         private IDictionary<Guid, Chat> Chats { get; set; }
-        public IDictionary<string, Message> DmrRequests { get; }
+        public IDictionary<string, ChatMessage> DmrRequests { get; }
 
         public ChatService()
         {
             Chats = new ConcurrentDictionary<Guid, Chat>();
-            DmrRequests = new ConcurrentDictionary<string, Message>();
+            DmrRequests = new ConcurrentDictionary<string, ChatMessage>();
         }
 
         public Chat CreateChat()
@@ -33,9 +35,9 @@ namespace MockBot.Api.Services
             return Chats.TryGetValue(chatId, out var chat) ? chat : null;
         }
 
-        public Message AddMessage(Guid chatId, string content)
+        public ChatMessage AddMessage(Guid chatId, string content)
         {
-            var message = new Message(content);
+            var message = new ChatMessage(content);
             var chat = FindById(chatId);
 
             if (chat == null)
@@ -65,7 +67,7 @@ namespace MockBot.Api.Services
             message.ModelType = headers.XModelType;
         }
 
-        public void AddDmrRequest(Message message)
+        public void AddDmrRequest(ChatMessage message)
         {
             if (message == null)
             {

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using MockBot.Api.Services.Dmr;
 using MockBot.Api.Services.Dmr.Extensions;
+using RequestProcessor.AsyncProcessor;
 using System;
 using System.Linq;
 using Xunit;
@@ -23,7 +24,7 @@ namespace MockBot.UnitTests.Services.Dmr.Extensions
 
             // Act
             collection.AddDmrService(DefaultServiceConfig);
-            var dmrService = collection.First(e => e.ServiceType == typeof(IDmrService));
+            var dmrService = collection.First(e => e.ServiceType == typeof(IAsyncProcessorService<DmrRequest>));
             var dmrServiceSettings = collection.First(e => e.ServiceType == typeof(DmrServiceSettings));
             var dmrHostedService = collection.First(e => e.ServiceType == typeof(IHostedService));
 

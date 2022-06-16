@@ -3,6 +3,8 @@ using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 using MockBot.Api.Services.Dmr;
+using RequestProcessor.AsyncProcessor;
+using RequestProcessor.Models;
 using System.Text;
 
 namespace MockBot.Api.Controllers
@@ -12,10 +14,10 @@ namespace MockBot.Api.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
-        private readonly IDmrService _dmrService;
+        private readonly IAsyncProcessorService<DmrRequest> _dmrService;
         private readonly BotSettings _settings;
 
-        public ChatController(IChatService chatService, IDmrService dmrService, BotSettings settings)
+        public ChatController(IChatService chatService, IAsyncProcessorService<DmrRequest> dmrService, BotSettings settings)
         {
             _chatService = chatService;
             _dmrService = dmrService;
@@ -34,15 +36,15 @@ namespace MockBot.Api.Controllers
         [HttpGet("{chatId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public ActionResult<Chat> Get(Guid chatId)
+        public ActionResult<Models.Chat> Get(Guid chatId)
         {
             var chat = _chatService.FindById(chatId);
 
-            return chat == null ? NotFound() : chat;
+            return chat == null ? NotFound() : Ok(chat);
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Chat))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(Models.Chat))]
         public CreatedResult Post()
         {
             var chat = _chatService.CreateChat();
@@ -66,7 +68,7 @@ namespace MockBot.Api.Controllers
                 var message = _chatService.AddMessage(chatId, content);
                 _chatService.AddDmrRequest(message);
 
-                _dmrService.RecordRequest(GetDmrRequest(message, string.Empty, _settings.Id));
+                _dmrService.Enqueue(GetDmrRequest(message, string.Empty, _settings.Id));
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
             catch (ArgumentOutOfRangeException)
@@ -81,14 +83,14 @@ namespace MockBot.Api.Controllers
         /// <param name="message">The message to go into the .Payload.Message property</param>
         /// <param name="classification">No classification before getting send to DMR</param>
         /// <returns>A DmrRequest object</returns>
-        private static DmrRequest GetDmrRequest(Message message, string classification, string botId)
+        private static DmrRequest GetDmrRequest(ChatMessage message, string classification, string botId)
         {
             // Setup headers
             var dmrHeaders = new HeadersInput
             {
                 XSentBy = botId,
                 XSendTo = "Classifier",
-                XMessageId = message.Id.ToString(),
+                XMessageId = new Guid().ToString(),
                 XModelType = "application/vnd.classifier.classification+json;version=1",
                 ContentType = "text/plain"
             };

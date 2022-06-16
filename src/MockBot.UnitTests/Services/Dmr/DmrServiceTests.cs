@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
-using MockBot.Api.Models;
 using MockBot.Api.Services.Dmr;
 using MockBot.UnitTests.Extensions;
 using Moq;
+using RequestProcessor.Models;
 using RichardSzalay.MockHttp;
 using System;
 using System.Net;
@@ -27,11 +27,11 @@ namespace MockBot.UnitTests.Services.Dmr
         {
             _ = httpMessageHandler.SetupWithExpectedMessage();
 
-            var clientFactory = GetHttpClientFactory(httpMessageHandler, new DmrServiceSettings());
+            var clientFactory = GetHttpClientFactory(httpMessageHandler, DefaultServiceConfig);
 
             var sut = new DmrService(clientFactory.Object, DefaultServiceConfig, logger.Object);
 
-            sut.RecordRequest(GetDmrRequest());
+            sut.Enqueue(GetDmrRequest());
 
             await sut.ProcessRequestsAsync().ConfigureAwait(false);
 
@@ -45,12 +45,12 @@ namespace MockBot.UnitTests.Services.Dmr
                 .SetupWithExpectedMessage("my first message", "education")
                 .SetupWithExpectedMessage("my second message", "social");
 
-            var clientFactory = GetHttpClientFactory(httpMessageHandler, new DmrServiceSettings());
+            var clientFactory = GetHttpClientFactory(httpMessageHandler, DefaultServiceConfig);
 
             var sut = new DmrService(clientFactory.Object, DefaultServiceConfig, logger.Object);
 
-            sut.RecordRequest(GetDmrRequest("my first message", "education"));
-            sut.RecordRequest(GetDmrRequest("my second message", "social"));
+            sut.Enqueue(GetDmrRequest("my first message", "education"));
+            sut.Enqueue(GetDmrRequest("my second message", "social"));
 
             await sut.ProcessRequestsAsync().ConfigureAwait(false);
 
@@ -63,11 +63,11 @@ namespace MockBot.UnitTests.Services.Dmr
             using var dmrHttpClient = new MockHttpMessageHandler();
             _ = dmrHttpClient.When("/").Respond(HttpStatusCode.BadGateway);
 
-            var clientFactory = GetHttpClientFactory(dmrHttpClient, new DmrServiceSettings());
+            var clientFactory = GetHttpClientFactory(dmrHttpClient, DefaultServiceConfig);
 
             var sut = new DmrService(clientFactory.Object, DefaultServiceConfig, logger.Object);
 
-            sut.RecordRequest(GetDmrRequest());
+            sut.Enqueue(GetDmrRequest());
 
             await sut.ProcessRequestsAsync().ConfigureAwait(false);
         }
