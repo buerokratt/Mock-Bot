@@ -11,30 +11,8 @@ namespace MockBot.Api.Models
         public Guid Id { get; } = Guid.NewGuid();
 
         [Required]
-        public Collection<Message> Messages { get; } = new Collection<Message>();
+        public Collection<ChatMessage> Messages { get; } = new Collection<ChatMessage>();
 
         public DateTime CreatedAt { get; } = DateTime.UtcNow;
-    }
-
-    // No logic so no unit tests are required
-    [ExcludeFromCodeCoverage]
-    public class Message
-    {
-        public Guid Id { get; } = Guid.NewGuid();
-
-        public string SentBy { get; set; }
-
-        public string SendTo { get; set; }
-
-        public string Content { get; }
-
-        public DateTime CreatedAt { get; } = DateTime.UtcNow;
-
-        public string ModelType { get; set; }
-
-        public Message([Required] string content)
-        {
-            Content = content;
-        }
     }
 }

@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
-using MockBot.Api.Models;
 using Moq;
+using RequestProcessor.Models;
+using RequestProcessor.Services.Encoder;
 using System;
 using System.IO;
 using System.Text;
@@ -23,11 +24,11 @@ namespace MockBot.UnitTests.Controllers
             var _mockEncoderService = new Mock<IEncodingService>();
             var _logger = new Mock<ILogger<DmrController>>();
 
-            var message = new Message("An important message");
+            var message = new Message() { Payload = "An important message" };
             var xSentBy = "sender";
             var xSendTo = "receiver";
             var xMessageId = "dmrMessage";
-            var xMessageIdRef = message.Id.ToString();
+            var xMessageIdRef = Guid.NewGuid().ToString();
             var xModelType = "good";
             var headers = new HeadersInput
             {
@@ -56,11 +57,11 @@ namespace MockBot.UnitTests.Controllers
             var _mockEncoderService = new Mock<IEncodingService>();
             var _logger = new Mock<ILogger<DmrController>>();
 
-            var message = new Message("An important message");
+            var message = new Message() { Payload = "An important message" };
             var xSentBy = "sender";
             var xSendTo = "receiver";
             var xMessageId = "dmrMessage";
-            var xMessageIdRef = message.Id.ToString();
+            var xMessageIdRef = Guid.NewGuid().ToString();
             var xModelType = "good";
             var headers = new HeadersInput
             {

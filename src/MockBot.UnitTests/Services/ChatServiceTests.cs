@@ -1,5 +1,6 @@
 ﻿using MockBot.Api.Models;
 using MockBot.Api.Services;
+using RequestProcessor.Models;
 using System;
 using Xunit;
 
@@ -55,7 +56,7 @@ namespace MockBot.UnitTests.Services
         [Fact]
         public void ShouldAddDmrRequests()
         {
-            var message = new Message("Hello");
+            var message = new ChatMessage("Hello");
 
             _sut.AddDmrRequest(message);
 
@@ -65,7 +66,7 @@ namespace MockBot.UnitTests.Services
         [Fact]
         public void ShouldAddMessageMetadata()
         {
-            var message = new Message("Hello");
+            var message = new ChatMessage("Hello");
             var xSentBy = "sender";
             var xSendTo = "receiver";
             var xMessageId = "dmrMessage";

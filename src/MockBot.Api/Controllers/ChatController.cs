@@ -2,7 +2,9 @@
 using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
-using MockBot.Api.Services.Dmr;
+using RequestProcessor.AsyncProcessor;
+using RequestProcessor.Dmr;
+using RequestProcessor.Models;
 using System.Text;
 
 namespace MockBot.Api.Controllers
@@ -12,10 +14,10 @@ namespace MockBot.Api.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
-        private readonly IDmrService _dmrService;
+        private readonly IAsyncProcessorService<DmrRequest> _dmrService;
         private readonly BotSettings _settings;
 
-        public ChatController(IChatService chatService, IDmrService dmrService, BotSettings settings)
+        public ChatController(IChatService chatService, IAsyncProcessorService<DmrRequest> dmrService, BotSettings settings)
         {
             _chatService = chatService;
             _dmrService = dmrService;
@@ -38,7 +40,7 @@ namespace MockBot.Api.Controllers
         {
             var chat = _chatService.FindById(chatId);
 
-            return chat == null ? NotFound() : chat;
+            return chat == null ? NotFound() : Ok(chat);
         }
 
         [HttpPost]
@@ -66,7 +68,7 @@ namespace MockBot.Api.Controllers
                 var message = _chatService.AddMessage(chatId, content);
                 _chatService.AddDmrRequest(message);
 
-                _dmrService.RecordRequest(GetDmrRequest(message, string.Empty, _settings.Id));
+                _dmrService.Enqueue(GetDmrRequest(message, string.Empty, _settings.Id));
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
             catch (ArgumentOutOfRangeException)
@@ -81,7 +83,7 @@ namespace MockBot.Api.Controllers
         /// <param name="message">The message to go into the .Payload.Message property</param>
         /// <param name="classification">No classification before getting send to DMR</param>
         /// <returns>A DmrRequest object</returns>
-        private static DmrRequest GetDmrRequest(Message message, string classification, string botId)
+        private static DmrRequest GetDmrRequest(ChatMessage message, string classification, string botId)
         {
             // Setup headers
             var dmrHeaders = new HeadersInput

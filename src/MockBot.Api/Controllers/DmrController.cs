@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers.Extensions;
 using MockBot.Api.Interfaces;
-using MockBot.Api.Models;
+using RequestProcessor.Models;
+using RequestProcessor.Services.Encoder;
 using System.Text;
 
 namespace MockBot.Api.Controllers
@@ -37,7 +38,11 @@ namespace MockBot.Api.Controllers
                 var decodedPayload = _encoder.DecodeBase64(encodedPayload);
 
                 // Just log telemetry for the DMR Callback at the moment...
-                _logger.DmrCallbackReceived(headers?.XSentBy ?? "Unknown", encodedPayload, decodedPayload);
+                _logger.DmrCallbackReceived(
+                    headers?.XSentBy ?? "Unknown",
+                    headers?.XMessageIdRef ?? "Unknown",
+                    encodedPayload,
+                    decodedPayload);
 
                 _chatService.AddMessageMetadata(headers);
             }

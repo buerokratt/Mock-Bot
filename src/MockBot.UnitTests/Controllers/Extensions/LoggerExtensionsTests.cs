@@ -23,7 +23,7 @@ namespace MockBot.UnitTests.Controllers.Extensions
         {
             var logger = _mockLogger.Object;
 
-            logger.DmrCallbackReceived("bot1", "encoded", "decoded");
+            logger.DmrCallbackReceived("bot1", "message1", "encoded", "decoded");
 
             _mockLogger.Verify(
                 m => m.Log(

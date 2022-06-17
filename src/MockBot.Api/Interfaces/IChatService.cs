@@ -1,4 +1,5 @@
 ﻿using MockBot.Api.Models;
+using RequestProcessor.Models;
 
 namespace MockBot.Api.Interfaces
 {
@@ -15,9 +16,9 @@ namespace MockBot.Api.Interfaces
 
         public Chat FindById(Guid chatId);
 
-        public void AddDmrRequest(Message message);
+        public ChatMessage AddMessage(Guid chatId, string content);
 
-        public Message AddMessage(Guid chatId, string content);
+        public void AddDmrRequest(ChatMessage message);
 
         public void AddMessageMetadata(HeadersInput headers);
     }
