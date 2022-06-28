@@ -65,7 +65,14 @@ namespace MockBot.Api.Controllers
                     content = await reader.ReadToEndAsync().ConfigureAwait(false);
                 }
 
-                var message = _chatService.AddMessage(chatId, content);
+                var headers = new HeadersInput()
+                {
+                    XSentBy = _settings.Id,
+                    XSendTo = "Dmr",
+                    XModelType = "application/vnd.classifier.classification+json;version=1",
+                };
+
+                var message = _chatService.AddMessage(chatId, content, headers);
                 _chatService.AddDmrRequest(message);
 
                 _dmrService.Enqueue(GetDmrRequest(message, string.Empty, _settings.Id));

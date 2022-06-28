@@ -15,6 +15,8 @@ namespace MockBot.Api.Models
 
         public string Content { get; }
 
+        public string Classification { get; set; }
+
         public DateTime CreatedAt { get; } = DateTime.UtcNow;
 
         public string ModelType { get; set; }

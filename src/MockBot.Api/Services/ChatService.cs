@@ -1,7 +1,7 @@
-﻿using System.Collections.Concurrent;
-using MockBot.Api.Interfaces;
+﻿using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 using RequestProcessor.Models;
+using System.Collections.Concurrent;
 using Chat = MockBot.Api.Models.Chat;
 
 namespace MockBot.Api.Services
@@ -35,9 +35,31 @@ namespace MockBot.Api.Services
             return Chats.TryGetValue(chatId, out var chat) ? chat : null;
         }
 
-        public ChatMessage AddMessage(Guid chatId, string content)
+        public Chat FindByMessageId(Guid chatMessageId)
         {
-            var message = new ChatMessage(content);
+            return Chats.Values.FirstOrDefault(c => c.Messages.Select(m => m.Id).Contains(chatMessageId));
+        }
+
+        public ChatMessage AddMessage(Guid chatId, string content, HeadersInput headers, string classification = default)
+        {
+            if (headers == null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            };
+
+            if (chatId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(chatId));
+            };
+
+            var message = new ChatMessage(content)
+            {
+                Classification = (classification == default) ? string.Empty : classification,
+                SentBy = headers.XSentBy,
+                SendTo = headers.XSendTo,
+                ModelType = headers.XModelType
+            };
+
             var chat = FindById(chatId);
 
             if (chat == null)
@@ -47,24 +69,6 @@ namespace MockBot.Api.Services
 
             chat.Messages.Add(message);
             return message;
-        }
-
-        public void AddMessageMetadata(HeadersInput headers)
-        {
-            if (headers == null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            };
-
-            if (!DmrRequests.ContainsKey(headers.XMessageIdRef))
-            {
-                throw new ArgumentException(headers.XMessageIdRef);
-            }
-
-            var message = DmrRequests[headers.XMessageIdRef];
-            message.SentBy = headers.XSentBy;
-            message.SendTo = headers.XSendTo;
-            message.ModelType = headers.XModelType;
         }
 
         public void AddDmrRequest(ChatMessage message)

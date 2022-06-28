@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers.Extensions;
 using MockBot.Api.Interfaces;
+using RequestProcessor.Dmr;
 using RequestProcessor.Models;
 using RequestProcessor.Services.Encoder;
 using System.Text;
+using System.Text.Json;
 
 namespace MockBot.Api.Controllers
 {
@@ -36,15 +38,18 @@ namespace MockBot.Api.Controllers
                 }
 
                 var decodedPayload = _encoder.DecodeBase64(encodedPayload);
+                var payload = JsonSerializer.Deserialize<DmrRequestPayload>(decodedPayload);
 
-                // Just log telemetry for the DMR Callback at the moment...
+                // Add the message to the chat
+                var chat = _chatService.FindByMessageId(new Guid(headers?.XMessageIdRef));
+                _ = _chatService.AddMessage(chat.Id, payload.Message, headers, payload.Classification);
+
+                // Log telemtary
                 _logger.DmrCallbackReceived(
                     headers?.XSentBy ?? "Unknown",
                     headers?.XMessageIdRef ?? "Unknown",
                     encodedPayload,
                     decodedPayload);
-
-                _chatService.AddMessageMetadata(headers);
             }
             catch (ArgumentException)
             {
