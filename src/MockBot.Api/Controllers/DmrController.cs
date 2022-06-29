@@ -52,14 +52,14 @@ namespace MockBot.Api.Controllers
 
                 // Log telemtary
                 _logger.DmrCallbackReceived(
-                    headers?.XSentBy ?? "Unknown",
-                    headers?.XMessageIdRef ?? "Unknown",
+                    headers?.XSentBy ?? Models.Constants.Unknown,
+                    headers?.XMessageIdRef ?? Models.Constants.Unknown,
                     encodedPayload,
                     decodedPayload);
             }
             catch (ArgumentException)
             {
-                return NotFound(headers?.XMessageIdRef ?? "Unknown");
+                return NotFound(headers?.XMessageIdRef ?? Models.Constants.Unknown);
             }
 
             return Accepted();
