@@ -65,11 +65,16 @@ namespace MockBot.Api.Controllers
                     content = await reader.ReadToEndAsync().ConfigureAwait(false);
                 }
 
+                if (string.IsNullOrEmpty(content))
+                {
+                    return new BadRequestObjectResult("Post must have a body");
+                }
+
                 var headers = new HeadersInput()
                 {
                     XSentBy = _settings.Id,
-                    XSendTo = "Dmr",
-                    XModelType = "application/vnd.classifier.classification+json;version=1",
+                    XSendTo = Models.Constants.XSendToDmr,
+                    XModelType = Models.Constants.XModelType,
                 };
 
                 var message = _chatService.AddMessage(chatId, content, headers);
@@ -96,10 +101,10 @@ namespace MockBot.Api.Controllers
             var dmrHeaders = new HeadersInput
             {
                 XSentBy = botId,
-                XSendTo = "Classifier",
+                XSendTo = Models.Constants.XSendToClassifier,
                 XMessageId = message.Id.ToString(),
-                XModelType = "application/vnd.classifier.classification+json;version=1",
-                ContentType = "text/plain"
+                XModelType = Models.Constants.XModelType,
+                ContentType = Models.Constants.ContentTypePlain
             };
 
             // Setup payload

@@ -119,6 +119,23 @@ namespace MockBot.UnitTests.Controllers
             _ = Assert.IsType<NotFoundObjectResult>(result);
         }
 
+        [Fact]
+        public async Task ShouldReturnBadReqestIfBodyEmpty()
+        {
+            // Arrange
+            _sut.ControllerContext = new ControllerContext()
+            {
+                HttpContext = GetContext(string.Empty)
+            };
+            var chatId = Guid.NewGuid();
+
+            // Act
+            var result = await _sut.PostMessageAsync(chatId).ConfigureAwait(false);
+
+            // Assert
+            _ = Assert.IsType<BadRequestObjectResult>(result);
+        }
+
         private static DefaultHttpContext GetContext(string payload)
         {
             var httpContext = new DefaultHttpContext();
