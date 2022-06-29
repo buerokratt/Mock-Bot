@@ -7,6 +7,7 @@ using MockBot.Api.Models;
 using Moq;
 using RequestProcessor.AsyncProcessor;
 using RequestProcessor.Dmr;
+using RequestProcessor.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,12 +23,21 @@ namespace MockBot.UnitTests.Controllers
         private readonly ChatController _sut;
         private readonly Mock<IChatService> _mockChatService;
         private readonly Mock<IAsyncProcessorService<DmrRequest>> _mockDmrService;
+        private readonly HeadersInput _headers;
 
         public ChatControllerTests()
         {
             _mockChatService = new Mock<IChatService>();
             _mockDmrService = new Mock<IAsyncProcessorService<DmrRequest>>();
             _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object, new BotSettings() { Id = "bot1" });
+            _headers = new HeadersInput
+            {
+                XSentBy = "sender",
+                XSendTo = "receiver",
+                XMessageId = "UnitTestMessage",
+                XMessageIdRef = "",
+                XModelType = "somemodel"
+            };
         }
 
         [Fact]
@@ -91,7 +101,7 @@ namespace MockBot.UnitTests.Controllers
             var message = new ChatMessage(payload);
             var chat = new Chat();
             var currentDateTime = new DateTime();
-            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload)).Returns(message);
+            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload, _headers, default)).Returns(message);
 
             var result = await _sut.PostMessageAsync(chat.Id).ConfigureAwait(false);
 
@@ -113,7 +123,7 @@ namespace MockBot.UnitTests.Controllers
                 HttpContext = GetContext(payload)
             };
             var chat = new Chat();
-            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload)).Throws(new ArgumentOutOfRangeException(chat.Id.ToString()));
+            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload, _headers, default)).Throws(new ArgumentOutOfRangeException(chat.Id.ToString()));
 
 
             var result = await _sut.PostMessageAsync(chat.Id).ConfigureAwait(false);

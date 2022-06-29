@@ -17,39 +17,6 @@ namespace MockBot.UnitTests.Controllers
     public class DmrControllerTests
     {
         [Fact]
-        public async Task ShouldReturnAcceptedAndAddMetadataToMessageAsync()
-        {
-            // Arrange
-            var _mockChatService = new Mock<IChatService>();
-            var _mockEncoderService = new Mock<IEncodingService>();
-            var _logger = new Mock<ILogger<DmrController>>();
-
-            var message = new Message() { Payload = "An important message" };
-            var xSentBy = "sender";
-            var xSendTo = "receiver";
-            var xMessageId = "dmrMessage";
-            var xMessageIdRef = Guid.NewGuid().ToString();
-            var xModelType = "good";
-            var headers = new HeadersInput
-            {
-                XSentBy = xSentBy,
-                XSendTo = xSendTo,
-                XMessageId = xMessageId,
-                XMessageIdRef = xMessageIdRef,
-                XModelType = xModelType
-            };
-
-            var sut = SetupControllerContext(_mockChatService.Object, _mockEncoderService.Object, _logger.Object, "Message");
-
-            // Act
-            var result = await sut.PostDmrMessageAsync(headers).ConfigureAwait(false);
-
-            // Assert
-            _ = Assert.IsType<AcceptedResult>(result);
-            _mockChatService.Verify(cs => cs.AddMessageMetadata(It.IsAny<HeadersInput>()), Times.Once);
-        }
-
-        [Fact]
         public async Task DmrCallbackLogsTheCorrectEvent()
         {
             // Arrange
