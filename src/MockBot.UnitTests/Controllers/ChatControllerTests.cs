@@ -44,10 +44,7 @@ namespace MockBot.UnitTests.Controllers
         public void ShouldReturnSingleChat()
         {
             // Arrange
-            var chat = new Chat();
-            _ = _mockChatService.Setup(mock => mock.CreateChat())
-                .Returns(chat);
-            _ = _mockChatService.Setup(mock => mock.FindById(chat.Id)).Returns(chat);
+            var chat = _chatService.CreateChat();
 
             // Act
             var response = _sut.Get(chat.Id);
@@ -61,13 +58,14 @@ namespace MockBot.UnitTests.Controllers
         [Fact]
         public void ShouldReturnAllChats()
         {
-            var chat1 = new Chat();
-            var chat2 = new Chat();
-            var mockChats = new List<Chat>() { chat1, chat2 };
-            _ = _mockChatService.Setup(mock => mock.FindAll()).Returns(mockChats);
+            // Arrange
+            var chat1 = _chatService.CreateChat();
+            var chat2 = _chatService.CreateChat();
 
+            // Act
             var result = _sut.FindAll();
 
+            // Assert
             Assert.Equal(200, result.StatusCode);
             var resultList = Assert.IsType<List<Chat>>(result.Value);
             Assert.Equal(2, resultList.Count);
@@ -78,11 +76,10 @@ namespace MockBot.UnitTests.Controllers
         [Fact]
         public void ShouldCreateAndReturnChat()
         {
-            var chat = new Chat();
-            _ = _mockChatService.Setup(mock => mock.CreateChat()).Returns(chat);
-
+            // Act
             var result = _sut.Post();
 
+            // Assert
             Assert.Equal(201, result.StatusCode);
             var resultChat = Assert.IsType<Chat>(result.Value);
             Assert.NotEmpty(resultChat.Id.ToString());
