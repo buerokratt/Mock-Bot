@@ -21,23 +21,14 @@ namespace MockBot.UnitTests.Controllers
     public class ChatControllerTests : ControllerBase
     {
         private readonly ChatController _sut;
-        private readonly Mock<IChatService> _mockChatService;
         private readonly IChatService _chatService;
         private readonly Mock<IAsyncProcessorService<DmrRequest>> _mockDmrService;
-        private readonly HeadersInput _headers;
 
         public ChatControllerTests()
         {
-            _mockChatService = new Mock<IChatService>();
             _chatService = new ChatService();
             _mockDmrService = new Mock<IAsyncProcessorService<DmrRequest>>();
             _sut = new ChatController(_chatService, _mockDmrService.Object, new BotSettings() { Id = "unitTestBot" });
-            _headers = new HeadersInput
-            {
-                XSentBy = "unitTestBot",
-                XSendTo = "receiver",
-                XModelType = "somemodel"
-            };
         }
 
         [Fact]
