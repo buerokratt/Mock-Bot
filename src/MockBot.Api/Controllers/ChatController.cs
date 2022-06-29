@@ -59,11 +59,8 @@ namespace MockBot.Api.Controllers
         {
             try
             {
-                string content = string.Empty;
-                using (StreamReader reader = new(Request.Body, Encoding.UTF8))
-                {
-                    content = await reader.ReadToEndAsync().ConfigureAwait(false);
-                }
+                using StreamReader reader = new(Request.Body, Encoding.UTF8);
+                string content = await reader.ReadToEndAsync().ConfigureAwait(false);
 
                 if (string.IsNullOrEmpty(content))
                 {
@@ -80,7 +77,7 @@ namespace MockBot.Api.Controllers
                 var message = _chatService.AddMessage(chatId, content, headers);
                 _chatService.AddDmrRequest(message);
 
-                _dmrService.Enqueue(GetDmrRequest(message, string.Empty, _settings.Id));
+                _dmrService.Enqueue(GetDmrRequest(message, Models.Constants.Empty, _settings.Id));
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
             catch (ArgumentOutOfRangeException)

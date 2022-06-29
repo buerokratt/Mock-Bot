@@ -130,10 +130,11 @@ namespace MockBot.UnitTests.Controllers
             var chatId = Guid.NewGuid();
 
             // Act
-            var result = await _sut.PostMessageAsync(chatId).ConfigureAwait(false);
+            BadRequestObjectResult result = (BadRequestObjectResult)await _sut.PostMessageAsync(chatId).ConfigureAwait(false);
 
             // Assert
             _ = Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Equal("Post must have a body", result.Value);
         }
 
         private static DefaultHttpContext GetContext(string payload)
