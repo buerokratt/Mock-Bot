@@ -18,8 +18,6 @@ namespace MockBot.UnitTests.Services
             {
                 XSentBy = "sender",
                 XSendTo = "receiver",
-                XMessageId = "UnitTestMessage",
-                XMessageIdRef = "",
                 XModelType = "somemodel"
             };
         }

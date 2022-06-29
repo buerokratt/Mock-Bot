@@ -4,6 +4,7 @@ using MockBot.Api.Configuration;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
+using MockBot.Api.Services;
 using Moq;
 using RequestProcessor.AsyncProcessor;
 using RequestProcessor.Dmr;
@@ -14,7 +15,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Chat = MockBot.Api.Models.Chat;
 
 namespace MockBot.UnitTests.Controllers
 {
@@ -22,20 +22,20 @@ namespace MockBot.UnitTests.Controllers
     {
         private readonly ChatController _sut;
         private readonly Mock<IChatService> _mockChatService;
+        private readonly IChatService _chatService;
         private readonly Mock<IAsyncProcessorService<DmrRequest>> _mockDmrService;
         private readonly HeadersInput _headers;
 
         public ChatControllerTests()
         {
             _mockChatService = new Mock<IChatService>();
+            _chatService = new ChatService();
             _mockDmrService = new Mock<IAsyncProcessorService<DmrRequest>>();
-            _sut = new ChatController(_mockChatService.Object, _mockDmrService.Object, new BotSettings() { Id = "bot1" });
+            _sut = new ChatController(_chatService, _mockDmrService.Object, new BotSettings() { Id = "unitTestBot" });
             _headers = new HeadersInput
             {
-                XSentBy = "sender",
+                XSentBy = "unitTestBot",
                 XSendTo = "receiver",
-                XMessageId = "UnitTestMessage",
-                XMessageIdRef = "",
                 XModelType = "somemodel"
             };
         }
@@ -93,41 +93,41 @@ namespace MockBot.UnitTests.Controllers
         [InlineData("Some text")]
         public async Task ShouldAddMessageToChatAsync(string payload)
         {
+            // Arrange
             _sut.ControllerContext = new ControllerContext()
             {
                 HttpContext = GetContext(payload)
             };
 
-            var message = new ChatMessage(payload);
-            var chat = new Chat();
+            var chat = _chatService.CreateChat();
             var currentDateTime = new DateTime();
-            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload, _headers, default)).Returns(message);
 
+            // Act
             var result = await _sut.PostMessageAsync(chat.Id).ConfigureAwait(false);
 
+            // Assert
             var createdResult = Assert.IsType<CreatedResult>(result);
             var resultMessage = Assert.IsType<ChatMessage>(createdResult.Value);
             Assert.Equal($"/chats/{chat.Id}/messages", createdResult.Location);
             Assert.NotEmpty(resultMessage.Id.ToString());
             Assert.True(currentDateTime < resultMessage.CreatedAt);
-            _mockChatService.Verify(mock => mock.AddDmrRequest(message));
-            _mockDmrService.Verify(mock => mock.Enqueue(It.IsAny<DmrRequest>()));
         }
 
         [Theory]
         [InlineData("Some text")]
         public async Task ShouldFailToAddMessageToChatWhenNoChatWithGivenIdAsync(string payload)
         {
+            // Arrange
             _sut.ControllerContext = new ControllerContext()
             {
                 HttpContext = GetContext(payload)
             };
-            var chat = new Chat();
-            _ = _mockChatService.Setup(mock => mock.AddMessage(chat.Id, payload, _headers, default)).Throws(new ArgumentOutOfRangeException(chat.Id.ToString()));
+            var chatId = Guid.NewGuid();
 
+            // Act
+            var result = await _sut.PostMessageAsync(chatId).ConfigureAwait(false);
 
-            var result = await _sut.PostMessageAsync(chat.Id).ConfigureAwait(false);
-
+            // Assert
             _ = Assert.IsType<NotFoundObjectResult>(result);
         }
 
