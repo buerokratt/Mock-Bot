@@ -42,6 +42,12 @@ namespace MockBot.Api.Controllers
 
                 // Add the message to the chat
                 var chat = _chatService.FindByMessageId(new Guid(headers?.XMessageIdRef));
+                if (chat == null)
+                {
+                    // No matching message, create a new chat
+                    chat = _chatService.CreateChat();
+                }
+
                 _ = _chatService.AddMessage(chat.Id, payload.Message, headers, payload.Classification);
 
                 // Log telemtary
