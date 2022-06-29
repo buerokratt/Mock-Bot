@@ -59,7 +59,7 @@ namespace MockBot.Api.Controllers
         {
             try
             {
-                string content;
+                string content = string.Empty;
                 using (StreamReader reader = new(Request.Body, Encoding.UTF8))
                 {
                     content = await reader.ReadToEndAsync().ConfigureAwait(false);
