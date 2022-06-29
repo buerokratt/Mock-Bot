@@ -8,7 +8,6 @@ using MockBot.Api.Services;
 using Moq;
 using RequestProcessor.AsyncProcessor;
 using RequestProcessor.Dmr;
-using RequestProcessor.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
