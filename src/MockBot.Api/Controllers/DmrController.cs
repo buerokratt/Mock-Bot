@@ -44,8 +44,9 @@ namespace MockBot.Api.Controllers
                 var chat = _chatService.FindByMessageId(new Guid(headers?.XMessageIdRef));
                 if (chat == null)
                 {
-                    // No matching message, create a new chat
+                    // No matching message, create a new chat and log a warning
                     chat = _chatService.CreateChat();
+                    _logger.MessageWithNoChatReceived(headers?.XMessageIdRef, chat.Id.ToString(), encodedPayload, decodedPayload);
                 }
 
                 _ = _chatService.AddMessage(chat.Id, payload.Message, headers, payload.Classification);
