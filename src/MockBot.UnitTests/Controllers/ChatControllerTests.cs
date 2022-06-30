@@ -134,7 +134,7 @@ namespace MockBot.UnitTests.Controllers
             // Assert
             _ = Assert.IsType<BadRequestObjectResult>(result);
             var resultBadRequest = result as BadRequestObjectResult;
-            Assert.Equal("Post must have a body", resultBadRequest.Value);
+            Assert.Equal(Constants.PostNoBodyMessage, resultBadRequest.Value);
         }
 
         private static DefaultHttpContext GetContext(string payload)

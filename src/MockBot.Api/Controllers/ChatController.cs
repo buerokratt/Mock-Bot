@@ -64,7 +64,7 @@ namespace MockBot.Api.Controllers
 
                 if (string.IsNullOrEmpty(content))
                 {
-                    return new BadRequestObjectResult("Post must have a body");
+                    return new BadRequestObjectResult(Models.Constants.PostNoBodyMessage);
                 }
 
                 var headers = new HeadersInput()
