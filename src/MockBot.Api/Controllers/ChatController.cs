@@ -77,7 +77,7 @@ namespace MockBot.Api.Controllers
                 var message = _chatService.AddMessage(chatId, content, headers);
                 _chatService.AddDmrRequest(message);
 
-                _dmrService.Enqueue(GetDmrRequest(message, Models.Constants.Empty, _settings.Id));
+                _dmrService.Enqueue(GetDmrRequest(message, _settings.Id));
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
             catch (ArgumentOutOfRangeException)
@@ -92,7 +92,7 @@ namespace MockBot.Api.Controllers
         /// <param name="message">The message to go into the .Payload.Message property</param>
         /// <param name="classification">No classification before getting send to DMR</param>
         /// <returns>A DmrRequest object</returns>
-        private static DmrRequest GetDmrRequest(ChatMessage message, string classification, string botId)
+        private static DmrRequest GetDmrRequest(ChatMessage message, string botId, string classification = default)
         {
             // Setup headers
             var dmrHeaders = new HeadersInput
@@ -108,7 +108,7 @@ namespace MockBot.Api.Controllers
             var dmrPayload = new DmrRequestPayload()
             {
                 Message = message.Content,
-                Classification = classification
+                Classification = string.IsNullOrEmpty(classification) ? string.Empty : classification
             };
 
             // Setup request

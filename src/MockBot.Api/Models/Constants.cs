@@ -11,6 +11,5 @@ namespace MockBot.Api.Models
         public const string XSendToClassifier = "Classifier";
         public const string XModelType = "application/vnd.classifier.classification+json;version=1";
         public const string ContentTypePlain = "text/plain";
-        public const string Empty = "";
     }
 }
