@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers.Extensions;
 using MockBot.Api.Interfaces;
+using RequestProcessor.Dmr;
 using RequestProcessor.Models;
 using RequestProcessor.Services.Encoder;
 using System.Text;
+using System.Text.Json;
 
 namespace MockBot.Api.Controllers
 {
@@ -36,19 +38,29 @@ namespace MockBot.Api.Controllers
                 }
 
                 var decodedPayload = _encoder.DecodeBase64(encodedPayload);
+                var payload = JsonSerializer.Deserialize<DmrRequestPayload>(decodedPayload);
 
-                // Just log telemetry for the DMR Callback at the moment...
+                // Add the message to the chat
+                var chat = _chatService.FindByMessageId(new Guid(headers?.XMessageIdRef));
+                if (chat == null)
+                {
+                    // No matching message, create a new chat and log a warning
+                    chat = _chatService.CreateChat();
+                    _logger.MessageWithNoChatReceived(headers?.XMessageIdRef, chat.Id.ToString(), encodedPayload, decodedPayload);
+                }
+
+                _ = _chatService.AddMessage(chat.Id, payload.Message, headers, payload.Classification);
+
+                // Log telemtary
                 _logger.DmrCallbackReceived(
-                    headers?.XSentBy ?? "Unknown",
-                    headers?.XMessageIdRef ?? "Unknown",
+                    headers?.XSentBy ?? Models.Constants.Unknown,
+                    headers?.XMessageIdRef ?? Models.Constants.Unknown,
                     encodedPayload,
                     decodedPayload);
-
-                _chatService.AddMessageMetadata(headers);
             }
             catch (ArgumentException)
             {
-                return NotFound(headers?.XMessageIdRef ?? "Unknown");
+                return NotFound(headers?.XMessageIdRef ?? Models.Constants.Unknown);
             }
 
             return Accepted();

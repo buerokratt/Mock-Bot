@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
+using MockBot.Api.Services;
 using Moq;
 using RequestProcessor.Models;
 using RequestProcessor.Services.Encoder;
@@ -17,47 +18,12 @@ namespace MockBot.UnitTests.Controllers
     public class DmrControllerTests
     {
         [Fact]
-        public async Task ShouldReturnAcceptedAndAddMetadataToMessageAsync()
-        {
-            // Arrange
-            var _mockChatService = new Mock<IChatService>();
-            var _mockEncoderService = new Mock<IEncodingService>();
-            var _logger = new Mock<ILogger<DmrController>>();
-
-            var message = new Message() { Payload = "An important message" };
-            var xSentBy = "sender";
-            var xSendTo = "receiver";
-            var xMessageId = "dmrMessage";
-            var xMessageIdRef = Guid.NewGuid().ToString();
-            var xModelType = "good";
-            var headers = new HeadersInput
-            {
-                XSentBy = xSentBy,
-                XSendTo = xSendTo,
-                XMessageId = xMessageId,
-                XMessageIdRef = xMessageIdRef,
-                XModelType = xModelType
-            };
-
-            var sut = SetupControllerContext(_mockChatService.Object, _mockEncoderService.Object, _logger.Object, "Message");
-
-            // Act
-            var result = await sut.PostDmrMessageAsync(headers).ConfigureAwait(false);
-
-            // Assert
-            _ = Assert.IsType<AcceptedResult>(result);
-            _mockChatService.Verify(cs => cs.AddMessageMetadata(It.IsAny<HeadersInput>()), Times.Once);
-        }
-
-        [Fact]
         public async Task DmrCallbackLogsTheCorrectEvent()
         {
             // Arrange
-            var _mockChatService = new Mock<IChatService>();
-            var _mockEncoderService = new Mock<IEncodingService>();
+            var chatService = new ChatService();
+            var encodingService = new EncodingService();
             var _logger = new Mock<ILogger<DmrController>>();
-
-            var message = new Message() { Payload = "An important message" };
             var xSentBy = "sender";
             var xSendTo = "receiver";
             var xMessageId = "dmrMessage";
@@ -71,8 +37,9 @@ namespace MockBot.UnitTests.Controllers
                 XMessageIdRef = xMessageIdRef,
                 XModelType = xModelType
             };
+            var base64DmrRequestPayload = "ewogICAgIkNsYXNzaWZpY2F0aW9uIjoiZWR1Y2F0aW9uIiwKICAgICJNZXNzYWdlIjoiaSB3YW50IHRvIHJlZ2lzdGVyIG15IGNoaWxkIGF0IHNjaG9vbCIKfQ==";
 
-            var sut = SetupControllerContext(_mockChatService.Object, _mockEncoderService.Object, _logger.Object, "Message");
+            var sut = SetupControllerContext(chatService, encodingService, _logger.Object, base64DmrRequestPayload);
             _ = _logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
 
             // Act

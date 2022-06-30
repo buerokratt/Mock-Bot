@@ -59,16 +59,25 @@ namespace MockBot.Api.Controllers
         {
             try
             {
-                string content;
-                using (StreamReader reader = new(Request.Body, Encoding.UTF8))
+                using StreamReader reader = new(Request.Body, Encoding.UTF8);
+                string content = await reader.ReadToEndAsync().ConfigureAwait(false);
+
+                if (string.IsNullOrEmpty(content))
                 {
-                    content = await reader.ReadToEndAsync().ConfigureAwait(false);
+                    return new BadRequestObjectResult(Models.Constants.PostNoBodyMessage);
                 }
 
-                var message = _chatService.AddMessage(chatId, content);
+                var headers = new HeadersInput()
+                {
+                    XSentBy = _settings.Id,
+                    XSendTo = Models.Constants.XSendToDmr,
+                    XModelType = Models.Constants.XModelType,
+                };
+
+                var message = _chatService.AddMessage(chatId, content, headers);
                 _chatService.AddDmrRequest(message);
 
-                _dmrService.Enqueue(GetDmrRequest(message, string.Empty, _settings.Id));
+                _dmrService.Enqueue(GetDmrRequest(message, _settings.Id));
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
             catch (ArgumentOutOfRangeException)
@@ -83,23 +92,23 @@ namespace MockBot.Api.Controllers
         /// <param name="message">The message to go into the .Payload.Message property</param>
         /// <param name="classification">No classification before getting send to DMR</param>
         /// <returns>A DmrRequest object</returns>
-        private static DmrRequest GetDmrRequest(ChatMessage message, string classification, string botId)
+        private static DmrRequest GetDmrRequest(ChatMessage message, string botId, string classification = default)
         {
             // Setup headers
             var dmrHeaders = new HeadersInput
             {
                 XSentBy = botId,
-                XSendTo = "Classifier",
+                XSendTo = Models.Constants.XSendToClassifier,
                 XMessageId = message.Id.ToString(),
-                XModelType = "application/vnd.classifier.classification+json;version=1",
-                ContentType = "text/plain"
+                XModelType = Models.Constants.XModelType,
+                ContentType = Models.Constants.ContentTypePlain
             };
 
             // Setup payload
             var dmrPayload = new DmrRequestPayload()
             {
                 Message = message.Content,
-                Classification = classification
+                Classification = string.IsNullOrEmpty(classification) ? string.Empty : classification
             };
 
             // Setup request

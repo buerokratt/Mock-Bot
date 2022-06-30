@@ -9,10 +9,17 @@ namespace MockBot.UnitTests.Services
     public class ChatServiceTests
     {
         private readonly ChatService _sut;
+        private readonly HeadersInput _headers;
 
         public ChatServiceTests()
         {
             _sut = new ChatService();
+            _headers = new HeadersInput
+            {
+                XSentBy = "sender",
+                XSendTo = "receiver",
+                XModelType = "somemodel"
+            };
         }
 
         [Fact]
@@ -47,7 +54,7 @@ namespace MockBot.UnitTests.Services
             const string messageContent = "someText";
 
             var chat = _sut.CreateChat();
-            _ = _sut.AddMessage(chat.Id, messageContent);
+            _ = _sut.AddMessage(chat.Id, messageContent, _headers);
 
             var result = _sut.FindById(chat.Id);
             _ = Assert.Single(result.Messages);
@@ -64,48 +71,6 @@ namespace MockBot.UnitTests.Services
         }
 
         [Fact]
-        public void ShouldAddMessageMetadata()
-        {
-            var message = new ChatMessage("Hello");
-            var xSentBy = "sender";
-            var xSendTo = "receiver";
-            var xMessageId = "dmrMessage";
-            var xMessageIdRef = message.Id.ToString();
-            var xModelType = "good";
-            _sut.AddDmrRequest(message);
-            var headers = new HeadersInput
-            {
-                XSentBy = xSentBy,
-                XSendTo = xSendTo,
-                XMessageId = xMessageId,
-                XMessageIdRef = xMessageIdRef,
-                XModelType = xModelType
-            };
-
-            _sut.AddMessageMetadata(headers);
-
-            Assert.Equal(xSentBy, message.SentBy);
-            Assert.Equal(xSendTo, message.SendTo);
-            Assert.Equal(xModelType, message.ModelType);
-        }
-
-        [Fact]
-        public void AddMessageMetadataWithNullShouldThrowNullArgument()
-        {
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => _sut.AddMessageMetadata(null));
-            Assert.Equal("Value cannot be null. (Parameter 'headers')", ex.Message);
-        }
-
-        [Fact]
-        public void AddMessageMetadataMissingMessageRefShouldThrowArgument()
-        {
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentException>(() => _sut.AddMessageMetadata(new HeadersInput() { XMessageIdRef = "Doesn'tExist" }));
-            Assert.Equal("Doesn'tExist", ex.Message);
-        }
-
-        [Fact]
         public void AddDmrRequestWithNullShouldThrowNullArgument()
         {
             // Act & Assert
@@ -117,7 +82,7 @@ namespace MockBot.UnitTests.Services
         public void AddMessageInvalidChatIdShouldThrowArgumentOutOfRangeException()
         {
             // Act & Assert
-            var ex = Assert.Throws<ArgumentOutOfRangeException>(() => _sut.AddMessage(Guid.NewGuid(), "foo"));
+            var ex = Assert.Throws<ArgumentOutOfRangeException>(() => _sut.AddMessage(Guid.NewGuid(), "foo", _headers));
             Assert.Equal("Specified argument was out of the range of valid values. (Parameter 'chatId')", ex.Message);
         }
     }
