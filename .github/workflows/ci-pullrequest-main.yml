@@ -48,10 +48,10 @@ jobs:
     - name: Create Docker network bridge
       run: docker network create -d bridge my-network
       
-    - name: Run Docker Compose
+    - name: Run Docker Compose Up to start containers
       run: docker compose --file Tests/docker-compose.yml up --build --detach
 
-    - name: Restore dependencies for Test Repo
+    - name: Restore dependencies for Test repo
       run: dotnet restore Tests/src/Tests.IntegrationTests/*.csproj
       
     - name: Build Test repo
@@ -60,8 +60,8 @@ jobs:
     - name: Test Test repo
       run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build
       
-    - name: Stop Code repo in Docker Compose
-      run: docker compose down
+    - name: Run Docker Compose Down to stop containers
+      run: docker compose --file Tests/docker-compose.yml down
 
   BuildUnitTest:
     runs-on: ubuntu-latest
