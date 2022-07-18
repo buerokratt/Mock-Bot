@@ -5,7 +5,9 @@ on:
     branches: [ main ]
     
 env:
-  SutUriBase: "http://localhost:9012"
+  Bot1Url: "http://localhost:9012"
+  CentOpsUrl: "http://localhost:9014"
+  CentOpsApiKey: "testingadmin"
 
 jobs:
   BuildTest:
@@ -43,12 +45,6 @@ jobs:
       with:
         repository: buerokratt/CentOps
         path: CentOps
-        
-    - name: Restore dependencies for Test Repo
-      run: dotnet restore Tests/src/Tests.IntegrationTests/*.csproj
-      
-    - name: Build Test repo
-      run: dotnet build Tests/src/Tests.IntegrationTests/*.csproj --no-restore
       
     - name: Create Docker network bridge
       run: docker network create -d bridge my-network
@@ -56,8 +52,14 @@ jobs:
     - name: Run Code repo in Docker Compose
       run: docker compose up --build -d
        
+    - name: Restore dependencies for Test Repo
+      run: dotnet restore Tests/src/Tests.IntegrationTests/*.csproj
+      
+    - name: Build Test repo
+      run: dotnet build Tests/src/Tests.IntegrationTests/*.csproj --no-restore
+       
     - name: Test Test repo
-      run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build --verbosity Detailed
+      run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build
       
     - name: Stop Code repo in Docker Compose
       run: docker compose down
