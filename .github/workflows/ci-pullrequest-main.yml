@@ -121,7 +121,7 @@ jobs:
       run: docker network create -d bridge my-network
       
     - name: Run Docker Compose
-      run: docker compose up --build -d
+      run: docker compose up --file ../Tests/docker-compose.yml --build -d
        
     - name: Restore dependencies for Test Repo
       run: dotnet restore Tests/src/Tests.IntegrationTests/*.csproj
