@@ -49,7 +49,7 @@ jobs:
       run: docker network create -d bridge my-network
       
     - name: Run Docker Compose
-      run: docker compose --file .././Tests/docker-compose.yml up --build --detach
+      run: docker compose --file Tests/docker-compose.yml up --build --detach
 
     - name: Restore dependencies for Test Repo
       run: dotnet restore Tests/src/Tests.IntegrationTests/*.csproj
