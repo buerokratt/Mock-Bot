@@ -58,6 +58,37 @@ jobs:
     - name: Test Test repo
       run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build --verbosity normal  --collect:"XPlat Code Coverage"
       
+    - name: Copy Int Test Coverage output to root
+      run: cp src/Tests.IntegrationTests/TestResults/**/coverage.cobertura.xml coverage-int.cobertura.xml
+      
+    - name: Code Coverage Int Test Summary
+      uses: irongut/CodeCoverageSummary@5088d5eb315a46ff785c607078606c0b9107e0b6
+      with:
+        filename: coverage-int.cobertura.xml
+        fail_below_min: false
+        format: markdown
+        output: both
+        thresholds: '80'
+    
+    - name: Upload Coverage Int Test Markdown Report
+      uses: actions/upload-artifact@v3.0.0
+      with:
+        name: coverage-int-report-markdown
+        path: code-coverage-int-results.md
+        
+    - name: Upload Coverage Int Test XML Report
+      uses: actions/upload-artifact@v3.0.0
+      with:
+        name: coverage-int-report-xml
+        path: coverage-int.cobertura.xml
+        
+    - name: Add Coverage Int Test PR Comment
+      uses: marocchino/sticky-pull-request-comment@39c5b5dc7717447d0cba270cd115037d32d28443
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: code-coverage-int-results.md
+      
     - name: Stop Code repo in Docker Compose
       run: docker compose down
         
