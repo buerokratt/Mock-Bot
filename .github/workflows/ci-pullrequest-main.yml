@@ -19,6 +19,45 @@ jobs:
       with:
         dotnet-version: 6.0.x
         
+    - name: Checkout Test Repo
+      uses: actions/checkout@v3
+      with:
+        repository: buerokratt/Tests
+        path: Tests
+        
+    - name: Checkout Mock Classifier Repo
+      uses: actions/checkout@v3
+      with:
+        repository: buerokratt/Mock-Classifier
+        path: Mock-Classifier
+        
+    - name: Checkout DMR Repo
+      uses: actions/checkout@v3
+      with:
+        repository: buerokratt/DMR
+        path: DMR
+        
+    - name: Checkout CentOps Repo
+      uses: actions/checkout@v3
+      with:
+        repository: buerokratt/CentOps
+        path: CentOps
+        
+    - name: Restore dependencies for Test Repo
+      run: dotnet restore Tests/src/Tests.IntegrationTests/*.csproj
+      
+    - name: Build Test Repo
+      run: dotnet build Tests/src/Tests.IntegrationTests/*.csproj --no-restore
+      
+    - name: Run Code Repo in Docker Compose
+      run: docker compose up -d
+       
+    - name: Test Test Repo
+      run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build --verbosity normal 
+      
+    - name: Stop Code Repo in Docker Compose
+      run: docker compose down
+        
     - name: Dotnet Restore Tools
       run: dotnet tool restore --tool-manifest "src/.config/dotnet-tools.json"
         
@@ -79,26 +118,7 @@ jobs:
         name: mutation-report
         path: src/StrykerOutput
       
-    - name: Checkout Test Repo
-      uses: actions/checkout@v3
-      with:
-        repository: buerokratt/Tests
-        path: Tests
-        
-    - name: Restore dependencies for Test Repo
-      run: dotnet restore Tests/src/Tests.IntegrationTests/*.csproj
-      
-    - name: Build Test Repo
-      run: dotnet build Tests/src/Tests.IntegrationTests/*.csproj --no-restore
-      
-    - name: Run Code Repo in Docker Compose
-      run: docker compose up -d
-       
-    - name: Test Test Repo
-      run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build --verbosity normal 
-      
-    - name: Stop Code Repo in Docker Compose
-      run: docker compose down
+
 
   PackageDeploy:
     runs-on: ubuntu-latest
