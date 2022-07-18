@@ -3,7 +3,7 @@ version: '3.4'
 services:
   dmr:
     build:
-      context: ./DMR/src/Dmr.Api
+      context: DMR/src/Dmr.Api
       dockerfile: Dockerfile
     ports:
       - "9010:80"
@@ -22,7 +22,7 @@ services:
 
   classifier:
     build:
-      context: ./Mock-Classifier/src/MockClassifier.Api
+      context: Mock-Classifier/src/MockClassifier.Api
       dockerfile: Dockerfile
     ports:
       - "9011:80"
@@ -35,7 +35,7 @@ services:
 
   bot1:
     build:
-      context: ./Mock-Bot/src/MockBot.Api
+      context: Mock-Bot/src/MockBot.Api
       dockerfile: Dockerfile
     ports:
       - "9012:80"
@@ -49,7 +49,7 @@ services:
 
   bot2:
     build:
-      context: ./Mock-Bot/src/MockBot.Api
+      context: Mock-Bot/src/MockBot.Api
       dockerfile: Dockerfile
     ports:
       - "9013:80"
@@ -63,8 +63,8 @@ services:
 
   centops:
     build:
-      context: ./CentOps/src
-      dockerfile: ./CentOps.Api/Dockerfile
+      context: CentOps/src
+      dockerfile: CentOps.Api/Dockerfile
     ports:
       - "9014:80"
     environment:
