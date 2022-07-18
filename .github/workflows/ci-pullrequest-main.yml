@@ -98,7 +98,6 @@ jobs:
       with:
         repository: buerokratt/Tests
         path: Tests
-        ref: IncreaseTimeout
         
     - name: Checkout Mock Classifier repo
       uses: actions/checkout@v3
