@@ -35,7 +35,7 @@ services:
 
   bot1:
     build:
-      context: Mock-Bot/src/MockBot.Api
+      context: ./src/MockBot.Api
       dockerfile: Dockerfile
     ports:
       - "9012:80"
@@ -49,7 +49,7 @@ services:
 
   bot2:
     build:
-      context: Mock-Bot/src/MockBot.Api
+      context: ./src/MockBot.Api
       dockerfile: Dockerfile
     ports:
       - "9013:80"
