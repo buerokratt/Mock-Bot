@@ -54,7 +54,7 @@ jobs:
       run: docker network create -d bridge my-network
       
     - name: Run Code repo in Docker Compose
-      run: docker compose up -d
+      run: docker compose up --build -d
        
     - name: Test Test repo
       run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build --verbosity Detailed
