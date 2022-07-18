@@ -56,7 +56,7 @@ jobs:
       run: docker compose up -d
        
     - name: Test Test repo
-      run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build --verbosity normal 
+      run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build --verbosity normal  --collect:"XPlat Code Coverage"
       
     - name: Stop Code repo in Docker Compose
       run: docker compose down
