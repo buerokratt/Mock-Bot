@@ -10,7 +10,7 @@ env:
   CentOpsApiKey: "testingadmin"
 
 jobs:
-  BuildTest:
+  BuildUnitTest:
     runs-on: ubuntu-latest
 
     steps:
@@ -83,7 +83,7 @@ jobs:
         
   IntegrationTest:
     runs-on: ubuntu-latest
-    needs: BuildTest
+    needs: BuildUnitTest
 
     steps:
     - uses: actions/checkout@v3
