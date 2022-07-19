@@ -82,8 +82,7 @@ jobs:
         path: src/StrykerOutput
         
   IntegrationTest:
-    runs-on: ubuntu-latest  
-    needs: BuildUnitTest
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
