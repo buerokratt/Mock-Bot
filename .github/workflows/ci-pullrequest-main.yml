@@ -131,16 +131,12 @@ jobs:
     - name: Test Test repo
       run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build
       
+    - name: Dump Docker Logs
+      uses: jwalton/gh-docker-logs@v1
+      
     - name: Run Docker Compose Down to stop containers
       if: always()
       run: docker compose --file Tests/docker-compose.yml down
-      
-  IntegrationTestLogs:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Run Docker Compose Logs
-      run: docker compose --file Tests/docker-compose.yml logs --follow
 
   PackageDeploy:
     runs-on: ubuntu-latest
