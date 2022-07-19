@@ -133,6 +133,7 @@ jobs:
       run: dotnet test Tests/src/Tests.IntegrationTests/*.csproj --no-build
       
     - name: Run Docker Compose Down to stop containers
+      if: always()
       run: docker compose --file Tests/docker-compose.yml down
 
   PackageDeploy:
