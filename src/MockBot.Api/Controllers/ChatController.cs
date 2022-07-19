@@ -28,8 +28,8 @@ namespace MockBot.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public OkObjectResult FindAll()
         {
-            var chats = _chatService.FindAll();
-
+            //var chats = _chatService.FindAll();
+            var chats = new List<Chat>();
             return Ok(chats);
         }
 
