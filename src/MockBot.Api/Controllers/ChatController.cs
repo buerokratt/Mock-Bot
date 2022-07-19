@@ -9,7 +9,7 @@ using System.Text;
 
 namespace MockBot.Api.Controllers
 {
-    [Route("client-api/chats")]
+    [Route("client-api/chatters")]
     [ApiController]
     public class ChatController : ControllerBase
     {
@@ -28,8 +28,7 @@ namespace MockBot.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public OkObjectResult FindAll()
         {
-            //var chats = _chatService.FindAll();
-            var chats = new List<Chat>();
+            var chats = _chatService.FindAll();
             return Ok(chats);
         }
 
