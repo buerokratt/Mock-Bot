@@ -122,6 +122,9 @@ jobs:
       
     - name: Run Docker Compose Up to start containers
       run: docker compose --file Tests/docker-compose.yml up --build --detach
+      
+    - name: Run Docker Compose Logs
+      run: docker compose --file Tests/docker-compose.yml logs --follow
 
     - name: Restore dependencies for Test repo
       run: dotnet restore Tests/src/Tests.IntegrationTests/*.csproj
