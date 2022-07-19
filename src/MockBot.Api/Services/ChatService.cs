@@ -1,6 +1,6 @@
-﻿using MockBot.Api.Interfaces;
+﻿using Buerokratt.Common.Models;
+using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
-using RequestProcessor.Models;
 using System.Collections.Concurrent;
 using Chat = MockBot.Api.Models.Chat;
 

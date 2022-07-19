@@ -1,9 +1,9 @@
+using Buerokratt.Common.Dmr;
+using Buerokratt.Common.Encoder;
+using Buerokratt.Common.Models;
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Controllers.Extensions;
 using MockBot.Api.Interfaces;
-using RequestProcessor.Dmr;
-using RequestProcessor.Models;
-using RequestProcessor.Services.Encoder;
 using System.Text;
 using System.Text.Json;
 
