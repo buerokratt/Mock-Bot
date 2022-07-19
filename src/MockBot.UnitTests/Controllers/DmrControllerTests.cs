@@ -1,3 +1,5 @@
+using Buerokratt.Common.Encoder;
+using Buerokratt.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -5,8 +7,6 @@ using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Services;
 using Moq;
-using RequestProcessor.Models;
-using RequestProcessor.Services.Encoder;
 using System;
 using System.IO;
 using System.Text;

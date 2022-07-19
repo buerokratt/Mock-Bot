@@ -1,10 +1,11 @@
+using Buerokratt.Common.CentOps;
+using Buerokratt.Common.Dmr;
+using Buerokratt.Common.Dmr.Extensions;
+using Buerokratt.Common.Encoder;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Services;
-using MockBot.Api.Services.Dmr.Extensions;
-using RequestProcessor.Dmr;
-using RequestProcessor.Services.Encoder;
 using System.Diagnostics.CodeAnalysis;
 
 namespace MockBot.Api
@@ -23,7 +24,8 @@ namespace MockBot.Api
 
             // Add services to the container.
             var dmrSettings = configuration.GetSection("DmrServiceSettings").Get<DmrServiceSettings>();
-            services.AddDmrService(dmrSettings);
+            var centOpsSettings = configuration.GetSection("DmrServiceSettings").Get<CentOpsServiceSettings>();
+            services.AddDmrService(dmrSettings, centOpsSettings);
 
             var botSettings = configuration.GetSection("BotSettings").Get<BotSettings>();
             services.TryAddSingleton(botSettings);

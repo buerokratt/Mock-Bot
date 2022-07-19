@@ -1,5 +1,5 @@
-﻿using MockBot.Api.Models;
-using RequestProcessor.Models;
+﻿using Buerokratt.Common.Models;
+using MockBot.Api.Models;
 
 namespace MockBot.Api.Interfaces
 {

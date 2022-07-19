@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Buerokratt.Common.AsyncProcessor;
+using Buerokratt.Common.Dmr;
+using Buerokratt.Common.Models;
+using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
-using RequestProcessor.AsyncProcessor;
-using RequestProcessor.Dmr;
-using RequestProcessor.Models;
+using System.Net.Mime;
 using System.Text;
+using Constants = Buerokratt.Common.Models.Constants;
+using MockBotConstants = MockBot.Api.Models.Constants;
 
 namespace MockBot.Api.Controllers
 {
@@ -64,20 +67,21 @@ namespace MockBot.Api.Controllers
 
                 if (string.IsNullOrEmpty(content))
                 {
-                    return new BadRequestObjectResult(Models.Constants.PostNoBodyMessage);
+                    return new BadRequestObjectResult(MockBotConstants.PostNoBodyMessage);
                 }
 
                 var headers = new HeadersInput()
                 {
                     XSentBy = _settings.Id,
-                    XSendTo = Models.Constants.XSendToDmr,
-                    XModelType = Models.Constants.XModelType,
+                    XSendTo = Constants.ClassifierId,
+                    XModelType = ContentTypes.ClassificationRequest
                 };
 
                 var message = _chatService.AddMessage(chatId, content, headers);
                 _chatService.AddDmrRequest(message);
 
                 _dmrService.Enqueue(GetDmrRequest(message, _settings.Id));
+
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
             catch (ArgumentOutOfRangeException)
@@ -98,10 +102,10 @@ namespace MockBot.Api.Controllers
             var dmrHeaders = new HeadersInput
             {
                 XSentBy = botId,
-                XSendTo = Models.Constants.XSendToClassifier,
+                XSendTo = Constants.ClassifierId,
                 XMessageId = message.Id.ToString(),
-                XModelType = Models.Constants.XModelType,
-                ContentType = Models.Constants.ContentTypePlain
+                XModelType = ContentTypes.ClassificationRequest,
+                ContentType = MediaTypeNames.Text.Plain
             };
 
             // Setup payload

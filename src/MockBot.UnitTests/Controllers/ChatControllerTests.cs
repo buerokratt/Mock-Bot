@@ -1,3 +1,5 @@
+using Buerokratt.Common.AsyncProcessor;
+using Buerokratt.Common.Dmr;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Configuration;
@@ -6,8 +8,6 @@ using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 using MockBot.Api.Services;
 using Moq;
-using RequestProcessor.AsyncProcessor;
-using RequestProcessor.Dmr;
 using System;
 using System.Collections.Generic;
 using System.IO;
