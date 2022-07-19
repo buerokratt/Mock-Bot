@@ -29,6 +29,7 @@ namespace MockBot.Api.Controllers
         public OkObjectResult FindAll()
         {
             var chats = _chatService.FindAll();
+
             return Ok(chats);
         }
 
