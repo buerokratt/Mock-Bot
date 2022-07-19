@@ -9,7 +9,7 @@ using System.Text;
 
 namespace MockBot.Api.Controllers
 {
-    [Route("client-api/chatters")]
+    [Route("client-api/chats")]
     [ApiController]
     public class ChatController : ControllerBase
     {
