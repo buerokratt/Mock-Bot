@@ -9,6 +9,8 @@ using MockBot.Api.Configuration;
 using MockBot.Api.Controllers;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Services;
+using MockBot.Api.Models;
+using MockLogging;
 using Moq;
 using System;
 using System.IO;
@@ -20,43 +22,97 @@ namespace MockBot.UnitTests.Controllers
 {
     public class DmrControllerTests
     {
+        private readonly IChatService _chatService = new ChatService();
+        private readonly IEncodingService _encodingService = new EncodingService();
+        private readonly Mock<IAsyncProcessorService<DmrRequest>> _processor = new();
+        private readonly BotSettings _settings = new() { Id = "bot1" };
+        private readonly MockLogger<DmrController> _logger = new();
+
         [Fact]
         public async Task DmrCallbackLogsTheCorrectEvent()
         {
             // Arrange
-            var chatService = new ChatService();
-            var encodingService = new EncodingService();
-            var processor = new Mock<IAsyncProcessorService<DmrRequest>>();
-            var settings = new BotSettings() { Id = "bot1" };
-            var _logger = new Mock<ILogger<DmrController>>();
-            var xSentBy = "sender";
-            var xSendTo = "receiver";
-            var xMessageId = "dmrMessage";
-            var xMessageIdRef = Guid.NewGuid().ToString();
-            var xModelType = "good";
             var headers = new HeadersInput
             {
-                XSentBy = xSentBy,
-                XSendTo = xSendTo,
-                XMessageId = xMessageId,
-                XMessageIdRef = xMessageIdRef,
-                XModelType = xModelType
+                XSentBy = "sender",
+                XSendTo = "receiver",
+                XMessageId = "dmrMessage",
+                XMessageIdRef = Guid.NewGuid().ToString(),
+                XModelType = "good"
             };
             var base64DmrRequestPayload = "ewogICAgIkNsYXNzaWZpY2F0aW9uIjoiZWR1Y2F0aW9uIiwKICAgICJNZXNzYWdlIjoiaSB3YW50IHRvIHJlZ2lzdGVyIG15IGNoaWxkIGF0IHNjaG9vbCIKfQ==";
 
-            var sut = SetupControllerContext(chatService, encodingService, processor.Object, settings, _logger.Object, base64DmrRequestPayload);
-            _ = _logger.Setup(l => l.IsEnabled(It.IsAny<LogLevel>())).Returns(true);
+            var sut = SetupControllerContext(
+                _chatService,
+                _encodingService,
+                _processor.Object,
+                _settings,
+                _logger,
+                base64DmrRequestPayload);
 
             // Act
             _ = await sut.PostDmrMessageAsync(headers).ConfigureAwait(false);
 
             // Assert
-            _logger.Verify(x => x.Log(
-               LogLevel.Information,
-               new EventId(1, "DmrCallbackReceived"),
-               It.Is<It.IsAnyType>((v, t) => true),
-               It.IsAny<Exception>(),
-               It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
+            _ = _logger.VerifyLogEntry()
+                .HasLogLevel(LogLevel.Warning);
+
+            _ = _logger.VerifyLogEntry()
+                .HasLogLevel(LogLevel.Information)
+                .HasEventId(new EventId(1, "DmrCallbackReceived"));
+        }
+
+        [Fact]
+        public async Task DmrCallbackEnqueuesAcknowledgementWhenModelTypeIsMessageRequest()
+        {
+            // Arrange
+            var headers = new HeadersInput
+            {
+                XSentBy = "sender",
+                XSendTo = "receiver",
+                XMessageId = "incomingMessage",
+                XMessageIdRef = Guid.NewGuid().ToString(),
+                XModelType = ModelTypes.MessageRequest
+            };
+
+            var base64DmrRequestPayload = "ewogICAgIkNsYXNzaWZpY2F0aW9uIjoiZWR1Y2F0aW9uIiwKICAgICJNZXNzYWdlIjoiaSB3YW50IHRvIHJlZ2lzdGVyIG15IGNoaWxkIGF0IHNjaG9vbCIKfQ==";
+
+            var sut = SetupControllerContext(
+                _chatService,
+                _encodingService,
+                _processor.Object,
+                _settings,
+                _logger,
+                base64DmrRequestPayload);
+
+            // Act
+            _ = await sut.PostDmrMessageAsync(headers).ConfigureAwait(false);
+
+            // Assert
+            _processor.Verify(
+                m => m.Enqueue(It.Is<DmrRequest>(
+                    r => r.Headers.XModelType == Constants.MessageAcknowledgementModelType)));
+        }
+
+        [Fact]
+        public async Task DmrCallbackReturnsNotFoundWhenArgumentExceptionIsThrown()
+        {
+            // Arrange
+            var base64DmrRequestPayload = "ewogICAgIkNsYXNzaWZpY2F0aW9uIjoiZWR1Y2F0aW9uIiwKICAgICJNZXNzYWdlIjoiaSB3YW50IHRvIHJlZ2lzdGVyIG15IGNoaWxkIGF0IHNjaG9vbCIKfQ==";
+
+            var sut = SetupControllerContext(
+                _chatService,
+                _encodingService,
+                _processor.Object,
+                _settings,
+                _logger,
+                base64DmrRequestPayload);
+
+            // Act
+            var response = await sut.PostDmrMessageAsync(null).ConfigureAwait(false);
+
+            // Assert
+            _ = Assert.IsType<NotFoundObjectResult>(response);
         }
 
         private static DmrController SetupControllerContext(

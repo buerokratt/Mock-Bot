@@ -76,7 +76,7 @@ namespace MockBot.Api.Controllers
                     encodedPayload,
                     decodedPayload);
             }
-            catch (ArgumentException)
+            catch (ArgumentNullException)
             {
                 return NotFound(headers?.XMessageIdRef ?? Constants.Unknown);
             }

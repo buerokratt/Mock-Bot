@@ -4,9 +4,9 @@ namespace MockBot.Api.Models
 {
     // No logic so no unit tests are required
     [ExcludeFromCodeCoverage]
-    internal static class Constants
+    public static class Constants
     {
-        internal const string Unknown = "Unknown";
-        internal const string MessageAcknowledgementModelType = "application/vnd.mockbot.messageacknowledge+json;version=1";
+        public const string Unknown = "Unknown";
+        public const string MessageAcknowledgementModelType = "application/vnd.mockbot.messageacknowledge+json;version=1";
     }
 }
