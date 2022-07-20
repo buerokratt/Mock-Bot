@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Configuration;
 using MockBot.Api.Controllers.Extensions;
 using MockBot.Api.Interfaces;
+using MockBot.Api.Models;
 using System.Text;
 using System.Text.Json;
 
@@ -62,6 +63,7 @@ namespace MockBot.Api.Controllers
 
                 _ = _chatService.AddMessage(chat.Id, payload.Message, headers, payload.Classification);
 
+                // MockBot should *not* respond unless the incoming message is a MessageRequest. This would also prevent any infinite loops of messages between MockBot instances etc.
                 if (headers.XModelType == ModelTypes.MessageRequest)
                 {
                     SendBackAcknowledgement(headers, chat.Id, payload.Message);
@@ -69,14 +71,14 @@ namespace MockBot.Api.Controllers
 
                 // Log telemtary
                 _logger.DmrCallbackReceived(
-                    headers?.XSentBy ?? Models.Constants.Unknown,
-                    headers?.XMessageIdRef ?? Models.Constants.Unknown,
+                    headers?.XSentBy ?? Constants.Unknown,
+                    headers?.XMessageIdRef ?? Constants.Unknown,
                     encodedPayload,
                     decodedPayload);
             }
             catch (ArgumentException)
             {
-                return NotFound(headers?.XMessageIdRef ?? Models.Constants.Unknown);
+                return NotFound(headers?.XMessageIdRef ?? Constants.Unknown);
             }
 
             return Accepted();
@@ -91,7 +93,7 @@ namespace MockBot.Api.Controllers
                 XSentBy = _settings.Id,
                 XSendTo = incomingHeaders.XSentBy, // This is "SentBy" because the sender is now the recipient
                 XMessageIdRef = incomingHeaders.XMessageId,
-                XModelType = ModelTypes.MessageAcknowledgement,
+                XModelType = Constants.MessageAcknowledgementModelType,
                 ContentType = incomingHeaders.ContentType
             };
 
