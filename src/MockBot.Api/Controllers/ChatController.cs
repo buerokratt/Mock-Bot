@@ -7,8 +7,6 @@ using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 using System.Net.Mime;
 using System.Text;
-using Constants = Buerokratt.Common.Models.Constants;
-using MockBotConstants = MockBot.Api.Models.Constants;
 
 namespace MockBot.Api.Controllers
 {
@@ -17,13 +15,13 @@ namespace MockBot.Api.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
-        private readonly IAsyncProcessorService<DmrRequest> _dmrService;
+        private readonly IAsyncProcessorService<DmrRequest> _processor;
         private readonly BotSettings _settings;
 
-        public ChatController(IChatService chatService, IAsyncProcessorService<DmrRequest> dmrService, BotSettings settings)
+        public ChatController(IChatService chatService, IAsyncProcessorService<DmrRequest> dmrProcessorService, BotSettings settings)
         {
             _chatService = chatService;
-            _dmrService = dmrService;
+            _processor = dmrProcessorService;
             _settings = settings;
         }
 
@@ -58,29 +56,44 @@ namespace MockBot.Api.Controllers
         [HttpPost("{chatId}/messages")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> PostMessageAsync(Guid chatId)
+        public async Task<ActionResult> PostMessageAsync(Guid chatId, [FromHeader] HeadersInput headers)
         {
             try
             {
+                if (headers == null)
+                {
+                    return BadRequest(Errors.MissingHeadersInput);
+                }
+
                 using StreamReader reader = new(Request.Body, Encoding.UTF8);
                 string content = await reader.ReadToEndAsync().ConfigureAwait(false);
 
                 if (string.IsNullOrEmpty(content))
                 {
-                    return new BadRequestObjectResult(MockBotConstants.PostNoBodyMessage);
+                    return BadRequest(Errors.PostNoBodyMessage);
                 }
 
-                var headers = new HeadersInput()
+                var receipientId = headers.XSendTo;
+                var modelType = headers.XModelType;
+
+                if (string.IsNullOrEmpty(receipientId))
                 {
-                    XSentBy = _settings.Id,
-                    XSendTo = Constants.ClassifierId,
-                    XModelType = ContentTypes.ClassificationRequest
-                };
+                    receipientId = ParticipantIds.ClassifierId;
+                    modelType = ModelTypes.ClassificationRequest;
+                }
+
+                if (string.IsNullOrEmpty(headers.ContentType))
+                {
+                    headers.ContentType = MediaTypeNames.Text.Plain;
+                }
+
+                headers.XSentBy = _settings.Id;
+                headers.XSendTo = receipientId;
+                headers.XModelType = modelType;
 
                 var message = _chatService.AddMessage(chatId, content, headers);
-                _chatService.AddDmrRequest(message);
 
-                _dmrService.Enqueue(GetDmrRequest(message, _settings.Id));
+                _processor.Enqueue(GetDmrRequest(message, receipientId));
 
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
@@ -96,15 +109,15 @@ namespace MockBot.Api.Controllers
         /// <param name="message">The message to go into the .Payload.Message property</param>
         /// <param name="classification">No classification before getting send to DMR</param>
         /// <returns>A DmrRequest object</returns>
-        private static DmrRequest GetDmrRequest(ChatMessage message, string botId, string classification = default)
+        private DmrRequest GetDmrRequest(ChatMessage message, string sendTo, string classification = default)
         {
             // Setup headers
             var dmrHeaders = new HeadersInput
             {
-                XSentBy = botId,
-                XSendTo = Constants.ClassifierId,
+                XSentBy = _settings.Id,
+                XSendTo = sendTo,
                 XMessageId = message.Id.ToString(),
-                XModelType = ContentTypes.ClassificationRequest,
+                XModelType = ModelTypes.ClassificationRequest,
                 ContentType = MediaTypeNames.Text.Plain
             };
 

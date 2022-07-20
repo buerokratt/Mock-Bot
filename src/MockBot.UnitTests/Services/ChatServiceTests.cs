@@ -61,24 +61,6 @@ namespace MockBot.UnitTests.Services
         }
 
         [Fact]
-        public void ShouldAddDmrRequests()
-        {
-            var message = new ChatMessage("Hello");
-
-            _sut.AddDmrRequest(message);
-
-            Assert.Equal(1, _sut.DmrRequests.Count);
-        }
-
-        [Fact]
-        public void AddDmrRequestWithNullShouldThrowNullArgument()
-        {
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => _sut.AddDmrRequest(null));
-            Assert.Equal("Value cannot be null. (Parameter 'message')", ex.Message);
-        }
-
-        [Fact]
         public void AddMessageInvalidChatIdShouldThrowArgumentOutOfRangeException()
         {
             // Act & Assert

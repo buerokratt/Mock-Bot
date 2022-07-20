@@ -7,6 +7,5 @@ namespace MockBot.Api.Models
     public static class Constants
     {
         public const string Unknown = "Unknown";
-        public const string PostNoBodyMessage = "Post must have a body";
     }
 }

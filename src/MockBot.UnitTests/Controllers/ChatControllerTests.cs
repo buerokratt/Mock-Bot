@@ -1,5 +1,6 @@
 using Buerokratt.Common.AsyncProcessor;
 using Buerokratt.Common.Dmr;
+using Buerokratt.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Configuration;
@@ -11,6 +12,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -90,7 +92,8 @@ namespace MockBot.UnitTests.Controllers
             var currentDateTime = new DateTime();
 
             // Act
-            var result = await _sut.PostMessageAsync(chat.Id).ConfigureAwait(false);
+            var headers = GetHeadersInput();
+            var result = await _sut.PostMessageAsync(chat.Id, headers).ConfigureAwait(false);
 
             // Assert
             var createdResult = Assert.IsType<CreatedResult>(result);
@@ -112,7 +115,8 @@ namespace MockBot.UnitTests.Controllers
             var chatId = Guid.NewGuid();
 
             // Act
-            var result = await _sut.PostMessageAsync(chatId).ConfigureAwait(false);
+            var headers = GetHeadersInput();
+            var result = await _sut.PostMessageAsync(chatId, headers).ConfigureAwait(false);
 
             // Assert
             _ = Assert.IsType<NotFoundObjectResult>(result);
@@ -129,12 +133,13 @@ namespace MockBot.UnitTests.Controllers
             var chatId = Guid.NewGuid();
 
             // Act
-            var result = await _sut.PostMessageAsync(chatId).ConfigureAwait(false);
+            var headers = GetHeadersInput();
+            var result = await _sut.PostMessageAsync(chatId, headers).ConfigureAwait(false);
 
             // Assert
             _ = Assert.IsType<BadRequestObjectResult>(result);
             var resultBadRequest = result as BadRequestObjectResult;
-            Assert.Equal(Constants.PostNoBodyMessage, resultBadRequest.Value);
+            Assert.Equal(Errors.PostNoBodyMessage, resultBadRequest.Value);
         }
 
         private static DefaultHttpContext GetContext(string payload)
@@ -144,6 +149,24 @@ namespace MockBot.UnitTests.Controllers
             httpContext.Request.Body = stream;
             httpContext.Request.ContentLength = stream.Length;
             return httpContext;
+        }
+
+        private static HeadersInput GetHeadersInput(
+            string sentBy = "nlib",
+            string sendTo = "mofa",
+            string messageId = "123",
+            string messageIdRef = "234",
+            string modelType = "testmodel")
+        {
+            return new HeadersInput
+            {
+                XSentBy = sentBy,
+                XSendTo = sendTo,
+                XMessageId = messageId,
+                XMessageIdRef = messageIdRef,
+                XModelType = modelType,
+                ContentType = MediaTypeNames.Text.Plain
+            };
         }
     }
 }

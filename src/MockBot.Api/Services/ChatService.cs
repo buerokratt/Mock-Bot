@@ -10,12 +10,10 @@ namespace MockBot.Api.Services
     public class ChatService : IChatService
     {
         private IDictionary<Guid, Chat> Chats { get; set; }
-        public IDictionary<string, ChatMessage> DmrRequests { get; }
 
         public ChatService()
         {
             Chats = new ConcurrentDictionary<Guid, Chat>();
-            DmrRequests = new ConcurrentDictionary<string, ChatMessage>();
         }
 
         public Chat CreateChat()
@@ -70,16 +68,6 @@ namespace MockBot.Api.Services
 
             chat.Messages.Add(message);
             return message;
-        }
-
-        public void AddDmrRequest(ChatMessage message)
-        {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            };
-
-            DmrRequests.Add(message.Id.ToString(), message);
         }
     }
 }
