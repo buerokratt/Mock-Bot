@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Buerokratt.Common.AsyncProcessor;
+using Buerokratt.Common.Dmr;
+using Buerokratt.Common.Models;
+using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
-using RequestProcessor.AsyncProcessor;
-using RequestProcessor.Dmr;
-using RequestProcessor.Models;
 using System.Text;
 
 namespace MockBot.Api.Controllers

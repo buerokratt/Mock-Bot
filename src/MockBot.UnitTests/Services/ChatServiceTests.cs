@@ -1,6 +1,6 @@
-﻿using MockBot.Api.Models;
+﻿using Buerokratt.Common.Models;
+using MockBot.Api.Models;
 using MockBot.Api.Services;
-using RequestProcessor.Models;
 using System;
 using Xunit;
 
