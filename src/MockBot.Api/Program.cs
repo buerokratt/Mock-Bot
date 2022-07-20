@@ -1,7 +1,9 @@
+using AspNetCore.Authentication.ApiKey;
 using Buerokratt.Common.CentOps;
 using Buerokratt.Common.Dmr;
 using Buerokratt.Common.Dmr.Extensions;
 using Buerokratt.Common.Encoder;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
@@ -22,13 +24,11 @@ namespace MockBot.Api
 
             _ = configuration.AddEnvironmentVariables();
 
-            // Add services to the container.
-            var dmrSettings = configuration.GetSection("DmrServiceSettings").Get<DmrServiceSettings>();
-            var centOpsSettings = configuration.GetSection("DmrServiceSettings").Get<CentOpsServiceSettings>();
-            services.AddDmrService(dmrSettings, centOpsSettings);
-
             var botSettings = configuration.GetSection("BotSettings").Get<BotSettings>();
             services.TryAddSingleton(botSettings);
+
+            services.AddDmrCommunications(configuration);
+            services.AddApiAuthentication(configuration);
 
             _ = services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -50,6 +50,7 @@ namespace MockBot.Api
 
             _ = app.UseHttpsRedirection();
 
+            _ = app.UseAuthentication();
             _ = app.UseAuthorization();
 
             _ = app.MapControllers();
