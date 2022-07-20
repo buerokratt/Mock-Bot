@@ -103,11 +103,12 @@ namespace MockBot.UnitTests.Controllers
             Assert.True(currentDateTime < resultMessage.CreatedAt);
         }
 
-        [Theory]
-        [InlineData("Some text")]
-        public async Task ShouldFailToAddMessageToChatWhenNoChatWithGivenIdAsync(string payload)
+        [Fact]
+        public async Task ShouldFailToAddMessageToChatWhenNoChatWithGivenIdAsync()
         {
             // Arrange
+            var payload = "Some text";
+
             _sut.ControllerContext = new ControllerContext()
             {
                 HttpContext = GetContext(payload)
