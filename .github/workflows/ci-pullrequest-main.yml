@@ -97,6 +97,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         repository: buerokratt/Tests
+        ref: feature/bot2bottests
         path: Tests
         
     - name: Checkout Mock Classifier repo
