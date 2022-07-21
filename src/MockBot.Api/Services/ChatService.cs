@@ -2,6 +2,7 @@
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
 using System.Collections.Concurrent;
+
 using Chat = MockBot.Api.Models.Chat;
 
 namespace MockBot.Api.Services
@@ -9,12 +10,10 @@ namespace MockBot.Api.Services
     public class ChatService : IChatService
     {
         private IDictionary<Guid, Chat> Chats { get; set; }
-        public IDictionary<string, ChatMessage> DmrRequests { get; }
 
         public ChatService()
         {
             Chats = new ConcurrentDictionary<Guid, Chat>();
-            DmrRequests = new ConcurrentDictionary<string, ChatMessage>();
         }
 
         public Chat CreateChat()
@@ -42,14 +41,14 @@ namespace MockBot.Api.Services
 
         public ChatMessage AddMessage(Guid chatId, string content, HeadersInput headers, string classification = default)
         {
-            if (headers == null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            };
-
             if (chatId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(chatId));
+            };
+
+            if (headers == null)
+            {
+                throw new ArgumentNullException(nameof(headers));
             };
 
             var message = new ChatMessage(content)
@@ -69,16 +68,6 @@ namespace MockBot.Api.Services
 
             chat.Messages.Add(message);
             return message;
-        }
-
-        public void AddDmrRequest(ChatMessage message)
-        {
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            };
-
-            DmrRequests.Add(message.Id.ToString(), message);
         }
     }
 }
