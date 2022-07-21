@@ -1,5 +1,4 @@
 ﻿using Buerokratt.Common.Models;
-using MockBot.Api.Models;
 using MockBot.Api.Services;
 using System;
 using Xunit;
@@ -58,24 +57,6 @@ namespace MockBot.UnitTests.Services
 
             var result = _sut.FindById(chat.Id);
             _ = Assert.Single(result.Messages);
-        }
-
-        [Fact]
-        public void ShouldAddDmrRequests()
-        {
-            var message = new ChatMessage("Hello");
-
-            _sut.AddDmrRequest(message);
-
-            Assert.Equal(1, _sut.DmrRequests.Count);
-        }
-
-        [Fact]
-        public void AddDmrRequestWithNullShouldThrowNullArgument()
-        {
-            // Act & Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => _sut.AddDmrRequest(null));
-            Assert.Equal("Value cannot be null. (Parameter 'message')", ex.Message);
         }
 
         [Fact]

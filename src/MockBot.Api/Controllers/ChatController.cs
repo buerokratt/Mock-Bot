@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
 using MockBot.Api.Models;
+using System.Net.Mime;
 using System.Text;
 
 namespace MockBot.Api.Controllers
@@ -14,13 +15,13 @@ namespace MockBot.Api.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
-        private readonly IAsyncProcessorService<DmrRequest> _dmrService;
+        private readonly IAsyncProcessorService<DmrRequest> _dmrRequestProcessor;
         private readonly BotSettings _settings;
 
-        public ChatController(IChatService chatService, IAsyncProcessorService<DmrRequest> dmrService, BotSettings settings)
+        public ChatController(IChatService chatService, IAsyncProcessorService<DmrRequest> dmrRequestProcessor, BotSettings settings)
         {
             _chatService = chatService;
-            _dmrService = dmrService;
+            _dmrRequestProcessor = dmrRequestProcessor;
             _settings = settings;
         }
 
@@ -64,20 +65,16 @@ namespace MockBot.Api.Controllers
 
                 if (string.IsNullOrEmpty(content))
                 {
-                    return new BadRequestObjectResult(Models.Constants.PostNoBodyMessage);
+                    return BadRequest(Errors.PostNoBodyMessage);
                 }
 
-                var headers = new HeadersInput()
-                {
-                    XSentBy = _settings.Id,
-                    XSendTo = Models.Constants.XSendToDmr,
-                    XModelType = Models.Constants.XModelType,
-                };
+                var headers = GetHeadersInput(Request.Headers);
 
                 var message = _chatService.AddMessage(chatId, content, headers);
-                _chatService.AddDmrRequest(message);
 
-                _dmrService.Enqueue(GetDmrRequest(message, _settings.Id));
+                var dmrRequest = GetDmrRequest(message, headers);
+                _dmrRequestProcessor.Enqueue(dmrRequest);
+
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
             catch (ArgumentOutOfRangeException)
@@ -92,18 +89,8 @@ namespace MockBot.Api.Controllers
         /// <param name="message">The message to go into the .Payload.Message property</param>
         /// <param name="classification">No classification before getting send to DMR</param>
         /// <returns>A DmrRequest object</returns>
-        private static DmrRequest GetDmrRequest(ChatMessage message, string botId, string classification = default)
+        private static DmrRequest GetDmrRequest(ChatMessage message, HeadersInput headers, string classification = default)
         {
-            // Setup headers
-            var dmrHeaders = new HeadersInput
-            {
-                XSentBy = botId,
-                XSendTo = Models.Constants.XSendToClassifier,
-                XMessageId = message.Id.ToString(),
-                XModelType = Models.Constants.XModelType,
-                ContentType = Models.Constants.ContentTypePlain
-            };
-
             // Setup payload
             var dmrPayload = new DmrRequestPayload()
             {
@@ -111,13 +98,41 @@ namespace MockBot.Api.Controllers
                 Classification = string.IsNullOrEmpty(classification) ? string.Empty : classification
             };
 
+            headers.XMessageId = message.Id.ToString();
+
             // Setup request
-            var dmrRequest = new DmrRequest(dmrHeaders)
+            var dmrRequest = new DmrRequest(headers)
             {
                 Payload = dmrPayload
             };
 
             return dmrRequest;
+        }
+
+        private HeadersInput GetHeadersInput(IHeaderDictionary headers)
+        {
+            var input = new HeadersInput
+            {
+                XSentBy = _settings.Id,
+                XSendTo = headers[HeaderNames.XSendToHeaderName],
+                XMessageId = headers[HeaderNames.XMessageIdHeaderName],
+                XMessageIdRef = headers[HeaderNames.XMessageIdRefHeaderName],
+                XModelType = headers[HeaderNames.XModelTypeHeaderName],
+                ContentType = headers[HeaderNames.ContentTypeHeaderName]
+            };
+
+            if (string.IsNullOrEmpty(input.XSendTo))
+            {
+                input.XSendTo = ParticipantIds.ClassifierId;
+                input.XModelType = ModelTypes.ClassificationRequest;
+            }
+
+            if (string.IsNullOrEmpty(input.ContentType))
+            {
+                input.ContentType = MediaTypeNames.Text.Plain;
+            }
+
+            return input;
         }
     }
 }

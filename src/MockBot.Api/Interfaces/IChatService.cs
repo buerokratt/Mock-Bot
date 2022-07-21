@@ -19,7 +19,5 @@ namespace MockBot.Api.Interfaces
         public Chat FindByMessageId(Guid chatMessageId);
 
         public ChatMessage AddMessage(Guid chatId, string content, HeadersInput headers, string classification = default);
-
-        public void AddDmrRequest(ChatMessage message);
     }
 }

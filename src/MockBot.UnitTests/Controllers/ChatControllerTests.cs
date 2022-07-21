@@ -1,5 +1,6 @@
 using Buerokratt.Common.AsyncProcessor;
 using Buerokratt.Common.Dmr;
+using Buerokratt.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Configuration;
@@ -11,6 +12,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -81,7 +83,7 @@ namespace MockBot.UnitTests.Controllers
         public async Task ShouldAddMessageToChatAsync(string payload)
         {
             // Arrange
-            _sut.ControllerContext = new ControllerContext()
+            _sut.ControllerContext = new ControllerContext
             {
                 HttpContext = GetContext(payload)
             };
@@ -100,12 +102,13 @@ namespace MockBot.UnitTests.Controllers
             Assert.True(currentDateTime < resultMessage.CreatedAt);
         }
 
-        [Theory]
-        [InlineData("Some text")]
-        public async Task ShouldFailToAddMessageToChatWhenNoChatWithGivenIdAsync(string payload)
+        [Fact]
+        public async Task ShouldFailToAddMessageToChatWhenNoChatWithGivenIdAsync()
         {
             // Arrange
-            _sut.ControllerContext = new ControllerContext()
+            var payload = "Some text";
+
+            _sut.ControllerContext = new ControllerContext
             {
                 HttpContext = GetContext(payload)
             };
@@ -122,7 +125,7 @@ namespace MockBot.UnitTests.Controllers
         public async Task ShouldReturnBadReqestIfBodyEmpty()
         {
             // Arrange
-            _sut.ControllerContext = new ControllerContext()
+            _sut.ControllerContext = new ControllerContext
             {
                 HttpContext = GetContext(string.Empty)
             };
@@ -134,16 +137,41 @@ namespace MockBot.UnitTests.Controllers
             // Assert
             _ = Assert.IsType<BadRequestObjectResult>(result);
             var resultBadRequest = result as BadRequestObjectResult;
-            Assert.Equal(Constants.PostNoBodyMessage, resultBadRequest.Value);
+            Assert.Equal(Errors.PostNoBodyMessage, resultBadRequest.Value);
         }
 
-        private static DefaultHttpContext GetContext(string payload)
+        private static DefaultHttpContext GetContext(string payload, HeadersInput headers = null)
         {
             var httpContext = new DefaultHttpContext();
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
             httpContext.Request.Body = stream;
             httpContext.Request.ContentLength = stream.Length;
+            httpContext.Request.Headers[HeaderNames.XSentByHeaderName] = headers?.XSentBy;
+            httpContext.Request.Headers[HeaderNames.XSendToHeaderName] = headers?.XSendTo;
+            httpContext.Request.Headers[HeaderNames.XMessageIdHeaderName] = headers?.XMessageId;
+            httpContext.Request.Headers[HeaderNames.XMessageIdRefHeaderName] = headers?.XMessageIdRef;
+            httpContext.Request.Headers[HeaderNames.XModelTypeHeaderName] = headers?.XModelType;
+            httpContext.Request.Headers[HeaderNames.ContentTypeHeaderName] = headers?.ContentType;
+
             return httpContext;
+        }
+
+        private static HeadersInput GetHeadersInput(
+            string sentBy = "nlib",
+            string sendTo = "mofa",
+            string messageId = "123",
+            string messageIdRef = "234",
+            string modelType = "testmodel")
+        {
+            return new HeadersInput
+            {
+                XSentBy = sentBy,
+                XSendTo = sendTo,
+                XMessageId = messageId,
+                XMessageIdRef = messageIdRef,
+                XModelType = modelType,
+                ContentType = MediaTypeNames.Text.Plain
+            };
         }
     }
 }
