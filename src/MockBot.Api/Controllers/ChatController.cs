@@ -15,13 +15,13 @@ namespace MockBot.Api.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatService _chatService;
-        private readonly IAsyncProcessorService<DmrRequest> _processor;
+        private readonly IAsyncProcessorService<DmrRequest> _dmrRequestProcessor;
         private readonly BotSettings _settings;
 
-        public ChatController(IChatService chatService, IAsyncProcessorService<DmrRequest> dmrProcessorService, BotSettings settings)
+        public ChatController(IChatService chatService, IAsyncProcessorService<DmrRequest> dmrRequestProcessor, BotSettings settings)
         {
             _chatService = chatService;
-            _processor = dmrProcessorService;
+            _dmrRequestProcessor = dmrRequestProcessor;
             _settings = settings;
         }
 
@@ -73,7 +73,7 @@ namespace MockBot.Api.Controllers
                 var message = _chatService.AddMessage(chatId, content, headers);
 
                 var dmrRequest = GetDmrRequest(message, headers);
-                _processor.Enqueue(dmrRequest);
+                _dmrRequestProcessor.Enqueue(dmrRequest);
 
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }

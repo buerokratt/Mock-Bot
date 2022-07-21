@@ -18,20 +18,20 @@ namespace MockBot.Api.Controllers
     {
         private readonly IChatService _chatService;
         private readonly IEncodingService _encoder;
-        private readonly IAsyncProcessorService<DmrRequest> _processor;
+        private readonly IAsyncProcessorService<DmrRequest> _dmrRequestProcessor;
         private readonly BotSettings _settings;
         private readonly ILogger<DmrController> _logger;
 
         public DmrController(
             IChatService chatService,
             IEncodingService encoder,
-            IAsyncProcessorService<DmrRequest> processor,
+            IAsyncProcessorService<DmrRequest> dmrRequestProcessor,
             BotSettings settings,
             ILogger<DmrController> logger)
         {
             _chatService = chatService;
             _encoder = encoder;
-            _processor = processor;
+            _dmrRequestProcessor = dmrRequestProcessor;
             _settings = settings;
             _logger = logger;
         }
@@ -109,7 +109,7 @@ namespace MockBot.Api.Controllers
                 }
             };
 
-            _processor.Enqueue(dmrRequest);
+            _dmrRequestProcessor.Enqueue(dmrRequest);
 
         }
     }
