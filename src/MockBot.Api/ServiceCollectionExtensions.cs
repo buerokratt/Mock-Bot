@@ -6,11 +6,15 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MockBot.Api
 {
-    internal static class ServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
-
-        public static void AddDmrCommunications(this IServiceCollection services, ConfigurationManager configuration)
+        public static void AddDmrCommunications(this IServiceCollection services, IConfiguration configuration)
         {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
             // Add services to the container.
             var configurationSectionName = "DmrServiceSettings";
             var dmrSettings = configuration.GetSection(configurationSectionName).Get<DmrServiceSettings>();
@@ -18,12 +22,17 @@ namespace MockBot.Api
             services.AddDmrService(dmrSettings, centOpsSettings);
         }
 
-        public static void AddApiAuthentication(this IServiceCollection services, ConfigurationManager configuration)
+        public static void AddApiAuthentication(this IServiceCollection services, IConfiguration configuration)
         {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
             var configuredApiKey = configuration.GetConnectionString("ApiKey");
             if (string.IsNullOrWhiteSpace(configuredApiKey))
             {
-                throw new ArgumentException("ConnectionString::ApiKey not specified.");
+                throw new ArgumentException("ConnectionStrings::ApiKey not specified.");
             }
 
             _ = services.AddAuthentication(ApiKeyDefaults.AuthenticationScheme)

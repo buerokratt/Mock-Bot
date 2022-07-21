@@ -1,9 +1,4 @@
-using AspNetCore.Authentication.ApiKey;
-using Buerokratt.Common.CentOps;
-using Buerokratt.Common.Dmr;
-using Buerokratt.Common.Dmr.Extensions;
 using Buerokratt.Common.Encoder;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MockBot.Api.Configuration;
 using MockBot.Api.Interfaces;
