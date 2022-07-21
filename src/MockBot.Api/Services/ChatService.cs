@@ -41,14 +41,14 @@ namespace MockBot.Api.Services
 
         public ChatMessage AddMessage(Guid chatId, string content, HeadersInput headers, string classification = default)
         {
-            if (headers == null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            };
-
             if (chatId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(chatId));
+            };
+
+            if (headers == null)
+            {
+                throw new ArgumentNullException(nameof(headers));
             };
 
             var message = new ChatMessage(content)

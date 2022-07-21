@@ -56,15 +56,10 @@ namespace MockBot.Api.Controllers
         [HttpPost("{chatId}/messages")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> PostMessageAsync(Guid chatId, [FromHeader] HeadersInput headers)
+        public async Task<ActionResult> PostMessageAsync(Guid chatId)
         {
             try
             {
-                if (headers == null)
-                {
-                    return BadRequest(Errors.MissingHeadersInput);
-                }
-
                 using StreamReader reader = new(Request.Body, Encoding.UTF8);
                 string content = await reader.ReadToEndAsync().ConfigureAwait(false);
 
@@ -73,27 +68,12 @@ namespace MockBot.Api.Controllers
                     return BadRequest(Errors.PostNoBodyMessage);
                 }
 
-                var receipientId = headers.XSendTo;
-                var modelType = headers.XModelType;
-
-                if (string.IsNullOrEmpty(receipientId))
-                {
-                    receipientId = ParticipantIds.ClassifierId;
-                    modelType = ModelTypes.ClassificationRequest;
-                }
-
-                if (string.IsNullOrEmpty(headers.ContentType))
-                {
-                    headers.ContentType = MediaTypeNames.Text.Plain;
-                }
-
-                headers.XSentBy = _settings.Id;
-                headers.XSendTo = receipientId;
-                headers.XModelType = modelType;
+                var headers = GetHeadersInput(Request.Headers);
 
                 var message = _chatService.AddMessage(chatId, content, headers);
 
-                _processor.Enqueue(GetDmrRequest(message, receipientId));
+                var dmrRequest = GetDmrRequest(message, headers);
+                _processor.Enqueue(dmrRequest);
 
                 return Created(new Uri($"/chats/{chatId}/messages", UriKind.Relative), message);
             }
@@ -109,18 +89,8 @@ namespace MockBot.Api.Controllers
         /// <param name="message">The message to go into the .Payload.Message property</param>
         /// <param name="classification">No classification before getting send to DMR</param>
         /// <returns>A DmrRequest object</returns>
-        private DmrRequest GetDmrRequest(ChatMessage message, string sendTo, string classification = default)
+        private static DmrRequest GetDmrRequest(ChatMessage message, HeadersInput headers, string classification = default)
         {
-            // Setup headers
-            var dmrHeaders = new HeadersInput
-            {
-                XSentBy = _settings.Id,
-                XSendTo = sendTo,
-                XMessageId = message.Id.ToString(),
-                XModelType = ModelTypes.ClassificationRequest,
-                ContentType = MediaTypeNames.Text.Plain
-            };
-
             // Setup payload
             var dmrPayload = new DmrRequestPayload()
             {
@@ -128,13 +98,41 @@ namespace MockBot.Api.Controllers
                 Classification = string.IsNullOrEmpty(classification) ? string.Empty : classification
             };
 
+            headers.XMessageId = message.Id.ToString();
+
             // Setup request
-            var dmrRequest = new DmrRequest(dmrHeaders)
+            var dmrRequest = new DmrRequest(headers)
             {
                 Payload = dmrPayload
             };
 
             return dmrRequest;
+        }
+
+        private HeadersInput GetHeadersInput(IHeaderDictionary headers)
+        {
+            var input = new HeadersInput
+            {
+                XSentBy = _settings.Id,
+                XSendTo = headers[HeaderNames.XSendToHeaderName],
+                XMessageId = headers[HeaderNames.XMessageIdHeaderName],
+                XMessageIdRef = headers[HeaderNames.XMessageIdRefHeaderName],
+                XModelType = headers[HeaderNames.XModelTypeHeaderName],
+                ContentType = headers[HeaderNames.ContentTypeHeaderName]
+            };
+
+            if (string.IsNullOrEmpty(input.XSendTo))
+            {
+                input.XSendTo = ParticipantIds.ClassifierId;
+                input.XModelType = ModelTypes.ClassificationRequest;
+            }
+
+            if (string.IsNullOrEmpty(input.ContentType))
+            {
+                input.ContentType = MediaTypeNames.Text.Plain;
+            }
+
+            return input;
         }
     }
 }

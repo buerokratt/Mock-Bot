@@ -83,7 +83,7 @@ namespace MockBot.UnitTests.Controllers
         public async Task ShouldAddMessageToChatAsync(string payload)
         {
             // Arrange
-            _sut.ControllerContext = new ControllerContext()
+            _sut.ControllerContext = new ControllerContext
             {
                 HttpContext = GetContext(payload)
             };
@@ -92,8 +92,7 @@ namespace MockBot.UnitTests.Controllers
             var currentDateTime = new DateTime();
 
             // Act
-            var headers = GetHeadersInput();
-            var result = await _sut.PostMessageAsync(chat.Id, headers).ConfigureAwait(false);
+            var result = await _sut.PostMessageAsync(chat.Id).ConfigureAwait(false);
 
             // Assert
             var createdResult = Assert.IsType<CreatedResult>(result);
@@ -109,15 +108,14 @@ namespace MockBot.UnitTests.Controllers
             // Arrange
             var payload = "Some text";
 
-            _sut.ControllerContext = new ControllerContext()
+            _sut.ControllerContext = new ControllerContext
             {
                 HttpContext = GetContext(payload)
             };
             var chatId = Guid.NewGuid();
 
             // Act
-            var headers = GetHeadersInput();
-            var result = await _sut.PostMessageAsync(chatId, headers).ConfigureAwait(false);
+            var result = await _sut.PostMessageAsync(chatId).ConfigureAwait(false);
 
             // Assert
             _ = Assert.IsType<NotFoundObjectResult>(result);
@@ -127,15 +125,14 @@ namespace MockBot.UnitTests.Controllers
         public async Task ShouldReturnBadReqestIfBodyEmpty()
         {
             // Arrange
-            _sut.ControllerContext = new ControllerContext()
+            _sut.ControllerContext = new ControllerContext
             {
                 HttpContext = GetContext(string.Empty)
             };
             var chatId = Guid.NewGuid();
 
             // Act
-            var headers = GetHeadersInput();
-            var result = await _sut.PostMessageAsync(chatId, headers).ConfigureAwait(false);
+            var result = await _sut.PostMessageAsync(chatId).ConfigureAwait(false);
 
             // Assert
             _ = Assert.IsType<BadRequestObjectResult>(result);
@@ -143,12 +140,19 @@ namespace MockBot.UnitTests.Controllers
             Assert.Equal(Errors.PostNoBodyMessage, resultBadRequest.Value);
         }
 
-        private static DefaultHttpContext GetContext(string payload)
+        private static DefaultHttpContext GetContext(string payload, HeadersInput headers = null)
         {
             var httpContext = new DefaultHttpContext();
             var stream = new MemoryStream(Encoding.UTF8.GetBytes(payload));
             httpContext.Request.Body = stream;
             httpContext.Request.ContentLength = stream.Length;
+            httpContext.Request.Headers[HeaderNames.XSentByHeaderName] = headers?.XSentBy;
+            httpContext.Request.Headers[HeaderNames.XSendToHeaderName] = headers?.XSendTo;
+            httpContext.Request.Headers[HeaderNames.XMessageIdHeaderName] = headers?.XMessageId;
+            httpContext.Request.Headers[HeaderNames.XMessageIdRefHeaderName] = headers?.XMessageIdRef;
+            httpContext.Request.Headers[HeaderNames.XModelTypeHeaderName] = headers?.XModelType;
+            httpContext.Request.Headers[HeaderNames.ContentTypeHeaderName] = headers?.ContentType;
+
             return httpContext;
         }
 
