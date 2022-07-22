@@ -100,6 +100,9 @@ namespace MockBot.UnitTests.Controllers
             Assert.Equal($"/chats/{chat.Id}/messages", createdResult.Location);
             Assert.NotEmpty(resultMessage.Id.ToString());
             Assert.True(currentDateTime < resultMessage.CreatedAt);
+
+            // Validate the payload which is sent as a result of the message content.
+            _mockDmrService.Verify(dmr => dmr.Enqueue(It.Is<DmrRequest>(d => d.Payload.Message == payload)), Times.Exactly(1));
         }
 
         [Fact]

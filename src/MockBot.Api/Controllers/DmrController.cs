@@ -2,6 +2,7 @@ using Buerokratt.Common.AsyncProcessor;
 using Buerokratt.Common.Dmr;
 using Buerokratt.Common.Encoder;
 using Buerokratt.Common.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MockBot.Api.Configuration;
 using MockBot.Api.Controllers.Extensions;
@@ -14,6 +15,7 @@ namespace MockBot.Api.Controllers
 {
     [Route("dmr-api")]
     [ApiController]
+    [AllowAnonymous]
     public class DmrController : ControllerBase
     {
         private readonly IChatService _chatService;
