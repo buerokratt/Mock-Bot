@@ -98,7 +98,6 @@ namespace MockBot.UnitTests.Extensions
             services.AddApiAuthentication(configuration);
 
             // Assert
-            // Ensure that there's an ICentOpsService Implementation otherwise code needs to change.
             var interfaces = services.Select(s => s.ServiceType).ToArray();
             _ = interfaces.Should().Contain(typeof(ApiKeyInHeaderHandler));
         }

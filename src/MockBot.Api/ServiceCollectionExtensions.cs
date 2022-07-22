@@ -49,7 +49,6 @@ namespace MockBot.Api
                                         context.ApiKey != configuredApiKey)
                                     {
                                         context.ValidationFailed();
-
                                     }
                                     else
                                     {
