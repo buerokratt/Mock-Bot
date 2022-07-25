@@ -151,7 +151,7 @@ jobs:
       uses: docker/setup-buildx-action@v2
     
     - name: Docker Build
-      run: docker image build src/MockBot.Api/ -t mockbot
+      run: docker image build -f src/MockBot.Api/Dockerfile ./src -t mockbot
 
     - name: Scan for vulnerabilities
       uses: crazy-max/ghaction-container-scan@b5dc796ae2a0ab4338f6db67dd1041a1cf261c2c
