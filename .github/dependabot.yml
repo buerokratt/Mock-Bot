@@ -7,7 +7,7 @@ updates:
       time: "22:00"
  
   - package-ecosystem: "nuget"
-    directory: "/src/MocBot.UnitTests/"
+    directory: "/src/MockBot.UnitTests/"
     schedule:
       interval: "daily"
       time: "21:00"
